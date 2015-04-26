@@ -1,5 +1,6 @@
 import java.util.Random;
 
+//Creating variables and objects to be used in game
 int x, y, coins, i;
 WallRect wall001,wall002,wall003,wall004,wall005,wall006,wall007,wall008,wall009,wall010;
 Coin coin001;
@@ -7,15 +8,18 @@ Enemy enemy001;
 ArrayList<WallRect> walls;
 
 void setup() {
+   //Initializing variables
    x = 0;
    y = 0;
    coins = 0;
    size(200,200);
    frameRate(8);
-   //noCursor();
+   noCursor();
+   //Drawing the background
    fill(#888888);
    rect(0,0,200,200);
    fill(#000000);
+   //Creates grid lines for debugging and testing
    for (int i = 10; i != 200; i+=10) {
      line(i,0,i,200);
    }
@@ -32,83 +36,78 @@ void setup() {
    for (int i = 0; i != 5; i++) {
        walls.add(new WallRect(randInt(0,190,10),randInt(0,190,10),10,randInt(10,190,10)));
    }
+   //Creating a new Coin Object
    coin001 = new Coin(randInt(0,190,10),randInt(0,190,10));
+   //Drawing the Player
    fill(#0000FF);
    rect(x,y,10,10);
+   //Creating a new Enemy Object
    enemy001 = new Enemy(100,100);
    i = 0;
 }
 
 
-
+//The draw Function - This loop is like the main
+//Built in with processing
+//It is run however many times frames per second is set to
 void draw() {
+  //Looks to see if a key is pressed then sees what key
   if (keyPressed) {
+    //Normal key presses
     if (key == 'w') {
       if (checkAllCollisions(x,y,1,0) != 1) {
         fill(#0000FF);
         y-=10;
-        //refreshBoard();
-        //rect(x,y,10,10);
       }
     } else if (key == 'a') {
       if (checkAllCollisions(x,y,2,0) != 2) {
         fill(#0000FF);
         x-=10;
-        //refreshBoard();
-        //rect(x,y,10,10);
       }
     } else if (key == 's') {
       if (checkAllCollisions(x,y,3,0) != 3) {
         fill(#0000FF);
         y+=10;
-        //refreshBoard();
-        //rect(x,y,10,10);
       }
     } else if (key == 'd') {
       if (checkAllCollisions(x,y,4,0) != 4) {
         fill(#0000FF);
         x+=10;
-        //refreshBoard();
-        //rect(x,y,10,10);
       }
+    //Jump key presses
     } else if (key == 'i') {
       if (checkAllCollisions(x,y,5,0) != 5) {
         fill(#0000FF);
         y-=20;
-        //refreshBoard();
-        //rect(x,y,10,10);
       }
     } else if (key == 'j') {
       if (checkAllCollisions(x,y,6,0) != 6) {
         fill(#0000FF);
         x-=20;
-        //refreshBoard();
-        //rect(x,y,10,10);
       }
     } else if (key == 'k') {
       if (checkAllCollisions(x,y,7,0) != 7) {
         fill(#0000FF);
         y+=20;
-        //refreshBoard();
-        //rect(x,y,10,10);
       }
     } else if (key == 'l') {
       if (checkAllCollisions(x,y,8,0) != 8) {
         fill(#0000FF);
         x+=20;
-        //refreshBoard();
-        
       }
     }
+    //Checking on the coin
     if (!coin001.found && coin001.pickedUp(x,y,10,10)) {
        coins++;
        println(coins); 
     } 
   } 
-  
+  //Refreshing the board
   fill(#0000FF);
   refreshBoard();
+  //Redrawing the player
   rect(x,y,10,10);
+  //This allows the Enemy to move only once every 4 frames (twice a second)
   if (i == 4) {
     enemy001.moveTowardsPlayer(x,y);
     i = 0;
@@ -126,7 +125,7 @@ void draw() {
 
 //The WallRect Class
 //This class creates wall objects
-//Functions include two constructors, colliders, and more to be made in the future
+//Functions include two constructors, colliders, and redraw
 class WallRect {
    //Variables for the WallRect Object/Class
    public int x;
@@ -171,9 +170,7 @@ class WallRect {
    //@param playerY is the y coordinate of the top left corner of the player
    //@param playerWidthX is the length of the player on the x coordinate
    //@param playerWidthY is the length of the player on the y coordinate
-   //@param playerDirection is the direction that the player is facing
-   //@param noCollision is the value to return if the player does not collide with the wall
-   //@return playerDirection is returned so the program knows which way the player can not go
+   //@return boolean that is true when not colliding with a wall
    boolean checkCollision(int playerX, int playerY, int playerWidthX, int playerWidthY) {
       //Uses a nested if for readability
       //Could be combined to a single if
@@ -188,6 +185,7 @@ class WallRect {
       return true;
    }
    
+   //The redrawWall Function - Redraws the Wall
    void redrawWall() {
       rect(this.x,this.y,this.sizeX,this.sizeY);
    }
@@ -202,26 +200,42 @@ class WallRect {
 
 //The Coin Class
 //Creates a coin object that can be picked up by the player of the game
+//Functions include a constructor, redraw, and a Coin pickup detection
 class Coin {
+   //Variables for the Coin Object/Class
    private int x;
    private int y;
    public boolean found;
+   
+   //The Coin Constructor - Creates a normal Coin Object
+   //@param x is the x location of the top left corner of the Coin
+   //@param y is the y location of the top left corner of the Coin
    Coin(int x, int y) {
       this.x = x;
       this.y = y;
       this.found = false;
+      //Draws the Coin
       fill(#FFFF00);
       rect(x,y,10,10);
    } 
    
+   //The redrawCoin Function - Redraws the Coin
    void redrawCoin() {
+      //Only redraws the coin if it hasn't been found
       if (!this.found) {
         fill(#FFFF00);
         rect(this.x,this.y,10,10);
       }
    }
    
+   //The pickedUp Function - Sees if the player has picked up the coin yet
+   //@param playerX is the x coordinate of the top left corner of the player
+   //@param playerY is the y coordinate of the top left corner of the player
+   //@param playerWidthX is the length of the player on the x coordinate
+   //@param playerWidthY is the length of the player on the y coordinate
+   //@return boolean that is true when the player picks up the coin
    boolean pickedUp(int playerX, int playerY, int playerWidthX, int playerWidthY) {
+      //Checks the X coordinate first then the Y coordinate for speed and readability
       if (playerX > (this.x-playerWidthX) && playerX < (this.x + 10)) {
          if (playerY > (this.y-playerWidthY) && playerY < (this.y + 10)) {
             this.found = true;
@@ -240,10 +254,17 @@ class Coin {
 
 
 //The Enemy Class
+//Creates and Enemy AI object to interact with
+//Functions include two constructors, movement, and redraw
 class Enemy {
+  //Variables for the Enemy Object/Class
   private int x;
   private int y;
   private int speed;
+  
+  //The Basic Enemy Constructor - Creates an Enemy object with default speed
+  //@param x is the x location of the Enemy Object
+  //@param y is the y location of the Enemy Object
   Enemy(int x, int y) {
     this.x = x;
     this.y = y;
@@ -252,6 +273,10 @@ class Enemy {
     rect(this.x, this.y, 10, 10);
   }
   
+  //The Speed Enemy Constructor - Creates an Enemy object with custom speed
+  //@param x is the x location of the Enemy Object
+  //@param y is the y location of the Enemy Object
+  //@param speed is how fast the Enemy Object moves
   Enemy(int x, int y, int speed) {
     this.x = x;
     this.y = y;
@@ -260,7 +285,7 @@ class Enemy {
     rect(this.x, this.y, 10, 10);
   }
   
-  //The redrawEnemy Function - Redraws the enemy
+  //The redrawEnemy Function - Redraws the Enemy
   void redrawEnemy() {
     fill(#FF0000);
     rect(this.x, this.y, 10, 10);
@@ -397,7 +422,7 @@ int checkAllCollisions(int x, int y, int direction, int noCollision) {
       case 8: x += 20;
               break;
    }
-   //Loops through the wallsto get the collision
+   //Loops through the walls to get the collision
    for(int i = 0; i < walls.size(); i++) {
      if (!walls.get(i).checkCollision(x, y, 10, 10)) {
        collision = direction;
