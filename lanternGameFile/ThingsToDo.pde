@@ -1,5 +1,4 @@
 /*
-End game and tell the user their score if they lose
 Change controls
 - Have a direction pointer
 - Space bar is shoot

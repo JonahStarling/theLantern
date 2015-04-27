@@ -15,6 +15,8 @@ void setup() {
     frameRate(8);
     noCursor();
     level = 1;
+    //Drawing the Player
+    player001 = new Player(0,0,10,10,0);
     generateNewLevel(level);
     isGameOver = 0;
     x = player001.getX();
@@ -68,13 +70,6 @@ void draw() {
                     player001.moveX(20);
                 }
             }
-            //Checking on the coins
-            for (int i = 0; i < coins.size(); i++) {
-                //Checks if the coins have been picked up
-                if (!coins.get(i).found && coins.get(i).pickedUp(x, y, 10, 10)) {
-                    player001.addCoins(1);
-                }
-            }
         } 
         //Refreshing the board
         fill(#0000FF);
@@ -93,8 +88,7 @@ void draw() {
             }
         }
         i++;
-        //Checks if the game is over and stores its value
-        isGameOver = checkGameOver(player001);
+        
     } else if (isGameOver == 1) {
         //The game has been won
         //This is a delay timer
@@ -107,6 +101,18 @@ void draw() {
         generateNewLevel(level);
         //Reset the value
         isGameOver = 0;   
+    }
+    //Checks to make sure the game isn't already over
+    if (isGameOver != 2) {
+        //Checking on the coins
+        for (int i = 0; i < coins.size(); i++) {
+            //Checks if the coins have been picked up
+            if (!coins.get(i).found && coins.get(i).pickedUp(x, y, 10, 10)) {
+                player001.addCoins(1);
+            }
+        }
+        //Checks if the game is over and stores its value
+        isGameOver = checkGameOver(player001);   
     }
 }
 
@@ -261,6 +267,8 @@ int checkGameOver(Player player001) {
                textSize(16);
                textAlign(CENTER);
                text("GAME OVER - YOU LOSE", 100, 100);
+               String scoreString = "SCORE: " + player001.getNumOfCoins();
+               text(scoreString, 100, 120);
             }
         }
     }
@@ -303,7 +311,9 @@ void generateNewLevel(int level) {
     for (int i = 0; i != level; i++) {
         enemies.add(new Enemy(randInt(30, 190, 10), randInt(30, 190, 10)));
     }
-    //Drawing the Player
-    player001 = new Player(0,0,10,10,0);
+    //Resetting the player back to the start
+    player001.setX(0);
+    player001.setY(0);
+    player001.redrawPlayer();
     i = 0;
 }

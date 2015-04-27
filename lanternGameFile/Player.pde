@@ -66,6 +66,12 @@ class Player {
         return this.x;
     }
     
+    //The setX Function - Sets the X coordinate of the Player
+    //@param x is the new x location
+    void setX(int x) {
+        this.x = x;
+    }
+    
     //The moveX Function - Moves the X coordinate of the Player
     //@param distToMove is how far the player will move
     void moveX(int distToMove) {
@@ -76,6 +82,12 @@ class Player {
     //@returns the Y location of the Player
     int getY() {
         return this.y;
+    }
+    
+    //The setY Function - Sets the Y coordinate of the Player
+    //@param y is the new y location
+    void setY(int y) {
+        this.y = y;
     }
     
     //The moveY Function - Moves the Y coordinate of the Player
