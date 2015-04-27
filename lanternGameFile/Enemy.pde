@@ -96,5 +96,29 @@ class Enemy {
         //Then we redraw the Enemy AI
         redrawEnemy();
     }
+    
+    //The getX Function - Gives the X coordinate of the Enemy
+    //@returns the X location of the Enemy
+    int getX() {
+        return this.x;
+    }
+    
+    //The moveX Function - Moves the X coordinate of the Enemy
+    //@param distToMove is how far the enemy will move
+    void moveX(int distToMove) {
+        this.x += distToMove;    
+    }
+
+    //The getY Function - Gives the Y coordinate of the Enemy
+    //@returns the Y location of the Enemy
+    int getY() {
+        return this.y;
+    }
+    
+    //The moveY Function - Moves the Y coordinate of the Enemy
+    //@param distToMove is how far the enemy will move
+    void moveY(int distToMove) {
+        this.y += distToMove;    
+    }
 }
 //--- END OF Enemy CLASS ---//

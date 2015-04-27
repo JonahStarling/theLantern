@@ -1,7 +1,7 @@
 import java.util.Random;
 
 //Creating variables and objects to be used in game
-int i, x, y;
+int i, x, y, isGameOver;
 Coin coin001;
 Enemy enemy001;
 Player player001;
@@ -12,34 +12,8 @@ void setup() {
     size(200, 200);
     frameRate(8);
     noCursor();
-    //Drawing the background
-    fill(#888888);
-    rect(0, 0, 200, 200);
-    //Creates grid lines for debugging and testing
-    fill(#000000);
-    for (int i = 10; i != 200; i+=10) {
-        line(i, 0, i, 200);
-    }
-    for (int i = 10; i != 200; i+=10) {
-        line(0, i, 200, i);
-    }
-    //ArrayList of WallRect objects
-    walls = new ArrayList<WallRect>();
-    //Build the horizontal walls
-    for (int i = 0; i != 5; i++) {
-        walls.add(new WallRect(randInt(0, 190, 10), randInt(0, 190, 10), randInt(10, 190, 10), 10));
-    }
-    //Build the vertical walls
-    for (int i = 0; i != 5; i++) {
-        walls.add(new WallRect(randInt(0, 190, 10), randInt(0, 190, 10), 10, randInt(10, 190, 10)));
-    }
-    //Creating a new Coin Object
-    coin001 = new Coin(randInt(0, 190, 10), randInt(0, 190, 10));
-    //Drawing the Player
-    player001 = new Player(0,0,10,10,0);
-    //Creating a new Enemy Object
-    enemy001 = new Enemy(100, 100);
-    i = 0;
+    generateNewLevel();
+    isGameOver = 0;
     x = player001.getX();
     y = player001.getY();
 }
@@ -49,65 +23,75 @@ void setup() {
 //Built in with processing
 //It is run however many times frames per second is set to
 void draw() {
-    //Gets location of player
-    x = player001.getX();
-    y = player001.getY();
-    //Looks to see if a key is pressed then sees what key
-    if (keyPressed) {
-        //Normal key presses
-        if (key == 'w') {
-            if (checkAllCollisions(x, y, 1, 0) != 1) {
-                player001.moveY(-10);
+    //Checks the status of the game
+    if (isGameOver == 0) {
+        //Gets location of player
+        x = player001.getX();
+        y = player001.getY();
+        //Looks to see if a key is pressed then sees what key
+        if (keyPressed) {
+            //Normal key presses
+            if (key == 'w') {
+                if (checkAllCollisions(x, y, 1, 0) != 1) {
+                    player001.moveY(-10);
+                }
+            } else if (key == 'a') {
+                if (checkAllCollisions(x, y, 2, 0) != 2) {
+                    player001.moveX(-10);
+                }
+            } else if (key == 's') {
+                if (checkAllCollisions(x, y, 3, 0) != 3) {
+                    player001.moveY(10);
+                }
+            } else if (key == 'd') {
+                if (checkAllCollisions(x, y, 4, 0) != 4) {
+                    player001.moveX(10);
+                }
+                //Jump key presses
+            } else if (key == 'i') {
+                if (checkAllCollisions(x, y, 5, 0) != 5) {
+                    player001.moveY(-20);
+                }
+            } else if (key == 'j') {
+                if (checkAllCollisions(x, y, 6, 0) != 6) {
+                    player001.moveX(-20);
+                }
+            } else if (key == 'k') {
+                if (checkAllCollisions(x, y, 7, 0) != 7) {
+                    player001.moveY(20);
+                }
+            } else if (key == 'l') {
+                if (checkAllCollisions(x, y, 8, 0) != 8) {
+                    player001.moveX(20);
+                }
             }
-        } else if (key == 'a') {
-            if (checkAllCollisions(x, y, 2, 0) != 2) {
-                player001.moveX(-10);
+            //Checking on the coin
+            if (!coin001.found && coin001.pickedUp(x, y, 10, 10)) {
+                player001.addCoins(1);
+                println(player001.getNumOfCoins());
             }
-        } else if (key == 's') {
-            if (checkAllCollisions(x, y, 3, 0) != 3) {
-                player001.moveY(10);
-            }
-        } else if (key == 'd') {
-            if (checkAllCollisions(x, y, 4, 0) != 4) {
-                player001.moveX(10);
-            }
-            //Jump key presses
-        } else if (key == 'i') {
-            if (checkAllCollisions(x, y, 5, 0) != 5) {
-                player001.moveY(-20);
-            }
-        } else if (key == 'j') {
-            if (checkAllCollisions(x, y, 6, 0) != 6) {
-                player001.moveX(-20);
-            }
-        } else if (key == 'k') {
-            if (checkAllCollisions(x, y, 7, 0) != 7) {
-                player001.moveY(20);
-            }
-        } else if (key == 'l') {
-            if (checkAllCollisions(x, y, 8, 0) != 8) {
-                player001.moveX(20);
-            }
+        } 
+        //Refreshing the board
+        fill(#0000FF);
+        refreshBoard();
+        //Redrawing the player
+        player001.redrawPlayer();
+        //This allows the Enemy to move only once every 4 frames (twice a second)
+        if (i == 4) {
+            enemy001.moveTowardsPlayer(x, y);
+            i = 0;
+        } else {
+            enemy001.redrawEnemy();
         }
-        //Checking on the coin
-        if (!coin001.found && coin001.pickedUp(x, y, 10, 10)) {
-            player001.addCoins(1);
-            println(player001.getNumOfCoins());
-        }
-    } 
-    //Refreshing the board
-    fill(#0000FF);
-    refreshBoard();
-    //Redrawing the player
-    player001.redrawPlayer();
-    //This allows the Enemy to move only once every 4 frames (twice a second)
-    if (i == 4) {
-        enemy001.moveTowardsPlayer(x, y);
-        i = 0;
-    } else {
-        enemy001.redrawEnemy();
+        i++;
+        isGameOver = checkGameOver(player001, enemy001, coin001);
+    } else if (isGameOver == 1) {
+        int s = second()+3;
+        while (second() != s);
+        generateNewLevel();
+        println("new level");
+        isGameOver = 0;   
     }
-    i++;
 }
 
 
@@ -219,4 +203,60 @@ int checkAllCollisions(int x, int y, int direction, int noCollision) {
         collision = direction;
     }
     return collision;
+}
+
+//The checkGameOver Function
+int checkGameOver(Player player001, Enemy enemy001, Coin coin001) {
+    int isGameOver = 0;
+    if (player001.getX() == coin001.getX() && player001.getY() == coin001.getY()) {
+        //Game Won
+        isGameOver = 1;
+        fill(#00FF00);
+        rect(0,0,200,200);
+        fill(#000000);
+        textSize(16);
+        textAlign(CENTER);
+        text("GAME OVER - YOU WIN", 100, 100);
+    } else if (player001.getX() == enemy001.getX() && player001.getY() == enemy001.getY()) {
+        //Game Loss
+        isGameOver = 2;
+        fill(#FF0000);
+        rect(0,0,200,200);
+        fill(#000000);
+        textSize(16);
+        textAlign(CENTER);
+        text("GAME OVER - YOU LOSE", 100, 100);
+    }
+    return isGameOver;
+}
+
+void generateNewLevel() {
+    //Drawing the background
+    fill(#888888);
+    rect(0, 0, 200, 200);
+    //Creates grid lines for debugging and testing
+    fill(#000000);
+    for (int i = 10; i != 200; i+=10) {
+        line(i, 0, i, 200);
+    }
+    for (int i = 10; i != 200; i+=10) {
+        line(0, i, 200, i);
+    }
+    //ArrayList of WallRect objects
+    walls = new ArrayList<WallRect>();
+    //Build the horizontal walls
+    for (int i = 0; i != 5; i++) {
+        walls.add(new WallRect(randInt(0, 190, 10), randInt(0, 190, 10), randInt(10, 190, 10), 10));
+    }
+    //Build the vertical walls
+    for (int i = 0; i != 5; i++) {
+        walls.add(new WallRect(randInt(0, 190, 10), randInt(0, 190, 10), 10, randInt(10, 190, 10)));
+    }
+    //Creating a new Coin Object
+    coin001 = new Coin(randInt(0, 190, 10), randInt(0, 190, 10));
+    //Drawing the Player
+    player001 = new Player(0,0,10,10,0);
+    //Creating a new Enemy Object
+    enemy001 = new Enemy(100, 100);
+    i = 0;
 }

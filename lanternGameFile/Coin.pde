@@ -54,5 +54,29 @@ class Coin {
         } 
         return false;
     }
+    
+    //The getX Function - Gives the X coordinate of the Coin
+    //@returns the X location of the Coin
+    int getX() {
+        return this.x;
+    }
+    
+    //The moveX Function - Moves the X coordinate of the Coin
+    //@param distToMove is how far the coin will move
+    void moveX(int distToMove) {
+        this.x += distToMove;    
+    }
+
+    //The getY Function - Gives the Y coordinate of the Coin
+    //@returns the Y location of the Coin
+    int getY() {
+        return this.y;
+    }
+    
+    //The moveY Function - Moves the Y coordinate of the Coin
+    //@param distToMove is how far the coin will move
+    void moveY(int distToMove) {
+        this.y += distToMove;    
+    }
 }
 //--- END OF Coin CLASS ---//
