@@ -78,5 +78,11 @@ class Coin {
     void moveY(int distToMove) {
         this.y += distToMove;    
     }
+    
+    //The getFound Function - Gives whether or not the Coin is found
+    //@returns if the coin has been found yet
+    boolean getFound() {
+        return this.found;
+    }
 }
 //--- END OF Coin CLASS ---//

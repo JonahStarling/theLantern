@@ -1,18 +1,21 @@
 import java.util.Random;
 
 //Creating variables and objects to be used in game
-int i, x, y, isGameOver;
+int i, x, y, isGameOver, level;
 Coin coin001;
 Enemy enemy001;
 Player player001;
 ArrayList<WallRect> walls;
+ArrayList<Enemy> enemies;
+ArrayList<Coin> coins;
 
 void setup() {
     //Setting up the settings
     size(200, 200);
     frameRate(8);
     noCursor();
-    generateNewLevel();
+    level = 1;
+    generateNewLevel(level);
     isGameOver = 0;
     x = player001.getX();
     y = player001.getY();
@@ -65,10 +68,12 @@ void draw() {
                     player001.moveX(20);
                 }
             }
-            //Checking on the coin
-            if (!coin001.found && coin001.pickedUp(x, y, 10, 10)) {
-                player001.addCoins(1);
-                println(player001.getNumOfCoins());
+            //Checking on the coins
+            for (int i = 0; i < coins.size(); i++) {
+                //Checks if the coins have been picked up
+                if (!coins.get(i).found && coins.get(i).pickedUp(x, y, 10, 10)) {
+                    player001.addCoins(1);
+                }
             }
         } 
         //Refreshing the board
@@ -78,18 +83,29 @@ void draw() {
         player001.redrawPlayer();
         //This allows the Enemy to move only once every 4 frames (twice a second)
         if (i == 4) {
-            enemy001.moveTowardsPlayer(x, y);
+            for (int i = 0; i < enemies.size(); i++) {
+                enemies.get(i).moveTowardsPlayer(x, y);   
+            }
             i = 0;
         } else {
-            enemy001.redrawEnemy();
+            for (int i = 0; i < enemies.size(); i++) {
+                enemies.get(i).redrawEnemy();   
+            }
         }
         i++;
-        isGameOver = checkGameOver(player001, enemy001, coin001);
+        //Checks if the game is over and stores its value
+        isGameOver = checkGameOver(player001);
     } else if (isGameOver == 1) {
+        //The game has been won
+        //This is a delay timer
+        //It pauses for 3 seconds
         int s = second()+3;
         while (second() != s);
-        generateNewLevel();
-        println("new level");
+        //Generating a new level
+        level++;
+        println(level);
+        generateNewLevel(level);
+        //Reset the value
         isGameOver = 0;   
     }
 }
@@ -143,7 +159,9 @@ void refreshBoard() {
         walls.get(i).redrawWall();
     }
     //Redrawing the coins
-    coin001.redrawCoin();
+    for (int i = 0; i < coins.size(); i++) {
+        coins.get(i).redrawCoin();   
+    }
     fill(#0000FF);
 }
 
@@ -205,32 +223,53 @@ int checkAllCollisions(int x, int y, int direction, int noCollision) {
     return collision;
 }
 
-//The checkGameOver Function
-int checkGameOver(Player player001, Enemy enemy001, Coin coin001) {
+//The checkGameOver Function - Checks if the user has the coin or has died
+//@param player001 is the player object that the user controls
+//@return isGameOver is a 0 if no, 1 if win, 2 if loss
+int checkGameOver(Player player001) {
+    //This is the value we will return
     int isGameOver = 0;
-    if (player001.getX() == coin001.getX() && player001.getY() == coin001.getY()) {
-        //Game Won
-        isGameOver = 1;
+    //Checks to see if the user has the coin
+    boolean allCoinsFound = true;
+    for (int i = 0; i < coins.size(); i++) {
+        if (!coins.get(i).getFound()) {
+            allCoinsFound = false;   
+        }
+    }
+    if (allCoinsFound) {
+        //Level beaten
+        isGameOver = 1;   
+        //Draw the Game Won Screen
         fill(#00FF00);
         rect(0,0,200,200);
         fill(#000000);
         textSize(16);
         textAlign(CENTER);
-        text("GAME OVER - YOU WIN", 100, 100);
-    } else if (player001.getX() == enemy001.getX() && player001.getY() == enemy001.getY()) {
-        //Game Loss
-        isGameOver = 2;
-        fill(#FF0000);
-        rect(0,0,200,200);
-        fill(#000000);
-        textSize(16);
-        textAlign(CENTER);
-        text("GAME OVER - YOU LOSE", 100, 100);
+        text("YOU WIN - LEVEL UP", 100, 100);
+    }
+    //Loops through enemies
+    for (int i = 0; i < enemies.size(); i++) {
+        //Checks if the player has lost
+        if (player001.getX() == enemies.get(i).getX()) {
+            if (player001.getY() == enemies.get(i).getY()) { 
+               //Game Loss
+               isGameOver = 2;
+               //Draw the Game Over Screen
+               fill(#FF0000);
+               rect(0,0,200,200);
+               fill(#000000);
+               textSize(16);
+               textAlign(CENTER);
+               text("GAME OVER - YOU LOSE", 100, 100);
+            }
+        }
     }
     return isGameOver;
 }
 
-void generateNewLevel() {
+//The generateNewLevel function - Creates a new random level
+//@param level is the current level the player is on
+void generateNewLevel(int level) {
     //Drawing the background
     fill(#888888);
     rect(0, 0, 200, 200);
@@ -252,11 +291,19 @@ void generateNewLevel() {
     for (int i = 0; i != 5; i++) {
         walls.add(new WallRect(randInt(0, 190, 10), randInt(0, 190, 10), 10, randInt(10, 190, 10)));
     }
-    //Creating a new Coin Object
-    coin001 = new Coin(randInt(0, 190, 10), randInt(0, 190, 10));
+    //ArrayList of Coin Objects
+    coins = new ArrayList<Coin>();
+    //Creating the coins to populate the ArrayList
+    for (int i = 0; i != level; i++) {
+        coins.add(new Coin(randInt(0, 190, 10), randInt(0, 190, 10)));
+    }
+    //ArrayList of Enemy Objects
+    enemies = new ArrayList<Enemy>();
+    //Creating the enemies to populate the ArrayList
+    for (int i = 0; i != level; i++) {
+        enemies.add(new Enemy(randInt(30, 190, 10), randInt(30, 190, 10)));
+    }
     //Drawing the Player
     player001 = new Player(0,0,10,10,0);
-    //Creating a new Enemy Object
-    enemy001 = new Enemy(100, 100);
     i = 0;
 }

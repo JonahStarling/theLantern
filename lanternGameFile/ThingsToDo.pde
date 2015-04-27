@@ -1,5 +1,4 @@
 /*
-Create new level when you beat the current level
 End game and tell the user their score if they lose
 Change controls
 - Have a direction pointer
