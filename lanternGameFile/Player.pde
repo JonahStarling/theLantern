@@ -131,19 +131,25 @@ class Player {
         this.numOfCoins -= coinsToSubtract;
     }
     
+    //The redrawPlayer Function - Redraws the Player object at its location
     void redrawPlayer() {
         fill(#0000FF);
         rect(this.x, this.y, this.sizeX, this.sizeY);   
     }
     
+    //The changeDirection Function - Rotates the player to a specific direction
+    //@param direction is the direction to be turned to
     void changeDirection(int direction) {
         this.direction = direction;   
     }
     
+    //The getDirection Function - Returns to the user the current direction
+    //@returns the current direction of the Player object
     int getDirection() {
         return this.direction;   
     }
     
+    //The rotatePlayerLeft Function - Rotates the player once to the left
     void rotatePlayerLeft() {
         if (this.direction == 4) {
             this.direction = 1;   
@@ -152,6 +158,7 @@ class Player {
         }
     }
     
+    //The rotatePlayerRight Function - Rotates the player once to the right
     void rotatePlayerRight() {
         if (this.direction == 1) {
             this.direction = 4;   

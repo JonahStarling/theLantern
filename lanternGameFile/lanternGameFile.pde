@@ -81,7 +81,7 @@ void draw() {
                     player001.moveX(20);
                     player001.changeDirection(4);
                 }
-            } else if (key == 'f') {
+            } else if (key == ' ') {
                 bullets.add(new Bullet(x+4.5,y+4.5,player001.getDirection()));
             } else if (key == 'q') {
                 player001.rotatePlayerLeft();
