@@ -206,6 +206,16 @@ class Coin {
     Coin(int x, int y) {
         this.x = x;
         this.y = y;
+        //Loops through all of the walls
+        for (int i = 0; i < walls.size (); i++) {
+            //Checks to see if the coin is stuck in a wall
+            if (!walls.get(i).checkCollision(this.x, this.y, 10, 10)) {
+                //If so then when change its location and try again
+                this.x = randInt(0, 190, 10);
+                this.y = randInt(0, 190, 10);
+                i = 0;
+            }
+        }
         this.found = false;
         //Draws the Coin
         fill(#FFFF00);
@@ -390,6 +400,16 @@ class Enemy {
     Enemy(int x, int y) {
         this.x = x;
         this.y = y;
+        //Loops through all of the walls
+        for (int i = 0; i < walls.size (); i++) {
+            //Checks to see if the enemy is stuck in a wall
+            if (!walls.get(i).checkCollision(this.x, this.y, 10, 10)) {
+                //If so then when change its location and try again
+                this.x = randInt(0, 190, 10);
+                this.y = randInt(0, 190, 10);
+                i = 0;
+            }
+        }
         this.speed = 10;
         fill(#FF0000);
         rect(this.x, this.y, 10, 10);
@@ -402,6 +422,16 @@ class Enemy {
     Enemy(int x, int y, int speed) {
         this.x = x;
         this.y = y;
+        //Loops through all of the walls
+        for (int i = 0; i < walls.size (); i++) {
+            //Checks to see if the enemy is stuck in a wall
+            if (!walls.get(i).checkCollision(this.x, this.y, 10, 10)) {
+                //If so then when change its location and try again
+                this.x = randInt(0, 190, 10);
+                this.y = randInt(0, 190, 10);
+                i = 0;
+            }
+        }
         this.speed = speed;
         fill(#FF0000);
         rect(this.x, this.y, 10, 10);
