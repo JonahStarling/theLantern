@@ -5,7 +5,9 @@ int i, x, y, isGameOver, level;
 Coin coin001;
 Enemy enemy001;
 Player player001;
+Bullet bullet001;
 ArrayList<WallRect> walls;
+ArrayList<Bullet> bullets;
 ArrayList<Enemy> enemies;
 ArrayList<Coin> coins;
 
@@ -21,6 +23,8 @@ void setup() {
     isGameOver = 0;
     x = player001.getX();
     y = player001.getY();
+    bullets = new ArrayList<Bullet>();
+    bullets.add(new Bullet(x+4.5,y+4.5,1));
 }
 
 
@@ -39,36 +43,50 @@ void draw() {
             if (key == 'w') {
                 if (checkAllCollisions(x, y, 1, 0) != 1) {
                     player001.moveY(-10);
+                    player001.changeDirection(1);
                 }
             } else if (key == 'a') {
                 if (checkAllCollisions(x, y, 2, 0) != 2) {
                     player001.moveX(-10);
+                    player001.changeDirection(2);
                 }
             } else if (key == 's') {
                 if (checkAllCollisions(x, y, 3, 0) != 3) {
                     player001.moveY(10);
+                    player001.changeDirection(3);
                 }
             } else if (key == 'd') {
                 if (checkAllCollisions(x, y, 4, 0) != 4) {
                     player001.moveX(10);
+                    player001.changeDirection(4);
                 }
                 //Jump key presses
             } else if (key == 'i') {
                 if (checkAllCollisions(x, y, 5, 0) != 5) {
                     player001.moveY(-20);
+                    player001.changeDirection(1);
                 }
             } else if (key == 'j') {
                 if (checkAllCollisions(x, y, 6, 0) != 6) {
                     player001.moveX(-20);
+                    player001.changeDirection(2);
                 }
             } else if (key == 'k') {
                 if (checkAllCollisions(x, y, 7, 0) != 7) {
                     player001.moveY(20);
+                    player001.changeDirection(3);
                 }
             } else if (key == 'l') {
                 if (checkAllCollisions(x, y, 8, 0) != 8) {
                     player001.moveX(20);
+                    player001.changeDirection(4);
                 }
+            } else if (key == 'f') {
+                bullets.add(new Bullet(x+4.5,y+4.5,player001.getDirection()));
+            } else if (key == 'q') {
+                player001.rotatePlayerLeft();
+            } else if (key == 'e') {
+                player001.rotatePlayerRight();
             }
         } 
         //Refreshing the board
@@ -93,8 +111,8 @@ void draw() {
         //The game has been won
         //This is a delay timer
         //It pauses for 3 seconds
-        int s = second()+3;
-        while (second() != s);
+        int m = millis();
+        while(millis() < m+3000);
         //Generating a new level
         level++;
         println(level);
@@ -113,6 +131,11 @@ void draw() {
         }
         //Checks if the game is over and stores its value
         isGameOver = checkGameOver(player001);   
+    }
+    for (int i = 0; i < bullets.size(); i++) {
+        if (bullets.get(i).getActive()) {
+            bullets.get(i).shootBullet();
+        }
     }
 }
 

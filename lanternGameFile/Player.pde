@@ -8,6 +8,7 @@ class Player {
     private int sizeX;
     private int sizeY;
     private int numOfCoins;
+    private int direction;
 
     //The Default Player Constructor - Creates a Player with default values
     Player() {
@@ -16,6 +17,7 @@ class Player {
         this.sizeX = 10;
         this.sizeY = 10;
         this.numOfCoins = 0;
+        this.direction = 3;
         redrawPlayer();
     }
 
@@ -28,6 +30,7 @@ class Player {
         this.sizeX = 10;
         this.sizeY = 10;
         this.numOfCoins = 0;
+        this.direction = 3;
         redrawPlayer();
     }
 
@@ -42,6 +45,7 @@ class Player {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.numOfCoins = 0;
+        this.direction = 3;
         redrawPlayer();
     }
 
@@ -57,6 +61,7 @@ class Player {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
         this.numOfCoins = numOfCoins;
+        this.direction = 3;
         redrawPlayer();
     }
 
@@ -129,6 +134,30 @@ class Player {
     void redrawPlayer() {
         fill(#0000FF);
         rect(this.x, this.y, this.sizeX, this.sizeY);   
+    }
+    
+    void changeDirection(int direction) {
+        this.direction = direction;   
+    }
+    
+    int getDirection() {
+        return this.direction;   
+    }
+    
+    void rotatePlayerLeft() {
+        if (this.direction == 4) {
+            this.direction = 1;   
+        } else {
+            this.direction++;   
+        }
+    }
+    
+    void rotatePlayerRight() {
+        if (this.direction == 1) {
+            this.direction = 4;   
+        } else {
+            this.direction--;   
+        }   
     }
 }
 //--- END OF Player CLASS ---//
