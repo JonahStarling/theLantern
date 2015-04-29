@@ -14,7 +14,7 @@ ArrayList<Coin> coins;
 void setup() {
     //Setting up the settings
     size(200, 200);
-    frameRate(8);
+    frameRate(60);
     noCursor();
     level = 1;
     //Drawing the Player
@@ -141,9 +141,13 @@ void draw() {
         //Checks if the game is over and stores its value
         isGameOver = checkGameOver(player001);   
     }
-    for (int i = 0; i < bullets.size(); i++) {
-        if (bullets.get(i).getActive()) {
-            bullets.get(i).shootBullet();
+    //We check if the game is over so bullets only appear in game
+    if (isGameOver == 0) {
+        //Loops through the Bullets and moves them
+        for (int i = 0; i < bullets.size(); i++) {
+            if (bullets.get(i).getActive()) {
+                bullets.get(i).shootBullet();
+            }
         }
     }
 }
@@ -184,14 +188,6 @@ void refreshBoard() {
     fill(#888888);
     rect(0, 0, 200, 200);
     fill(#000000);
-    //Redrawing the horizontal lines
-    for (int i = 10; i != 200; i+=10) {
-        line(i, 0, i, 200);
-    }
-    //Redrawing the vertical lines
-    for (int i = 10; i != 200; i+=10) {
-        line(0, i, 200, i);
-    }
     //Redrawing the walls
     for (int i = 0; i < walls.size (); i++) {
         walls.get(i).redrawWall();
@@ -315,12 +311,6 @@ void generateNewLevel(int level) {
     rect(0, 0, 200, 200);
     //Creates grid lines for debugging and testing
     fill(#000000);
-    for (int i = 10; i != 200; i+=10) {
-        line(i, 0, i, 200);
-    }
-    for (int i = 10; i != 200; i+=10) {
-        line(0, i, 200, i);
-    }
     //ArrayList of WallRect objects
     walls = new ArrayList<WallRect>();
     //Build the horizontal walls
