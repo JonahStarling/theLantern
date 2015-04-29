@@ -87,6 +87,15 @@ void draw() {
                 player001.rotatePlayerLeft();
             } else if (key == 'e') {
                 player001.rotatePlayerRight();
+            } else if (key == 'r') {
+                //Pressing r will reset the game
+                //Resetting the game causes you to lose all of your coins
+                //It also will set you back a level
+                if (level != 1) {
+                    level--;
+                }
+                player001.subtractCoins(player001.getNumOfCoins());
+                generateNewLevel(level);
             }
         } 
         //Refreshing the board

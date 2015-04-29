@@ -6,6 +6,7 @@ class Enemy {
     private int x;
     private int y;
     private int speed;
+    private int health;
 
     //The Basic Enemy Constructor - Creates an Enemy object with default speed
     //@param x is the x location of the Enemy Object
@@ -24,6 +25,7 @@ class Enemy {
             }
         }
         this.speed = 10;
+        this.health = 1;
         fill(#FF0000);
         rect(this.x, this.y, 10, 10);
     }
@@ -46,6 +48,31 @@ class Enemy {
             }
         }
         this.speed = speed;
+        this.health = 1;
+        fill(#FF0000);
+        rect(this.x, this.y, 10, 10);
+    }
+    
+    //The Health Enemy Constructor - Creates an Enemy object with a set health
+    //@param x is the x location of the Enemy Object
+    //@param y is the y location of the Enemy Object
+    //@param speed is how fast the Enemy Object moves
+    //@param health is how many bullets it takes to kill the Enemy
+    Enemy(int x, int y, int speed, int health) {
+        this.x = x;
+        this.y = y;
+        //Loops through all of the walls
+        for (int i = 0; i < walls.size (); i++) {
+            //Checks to see if the enemy is stuck in a wall
+            if (!walls.get(i).checkCollision(this.x, this.y, 10, 10)) {
+                //If so then when change its location and try again
+                this.x = randInt(0, 190, 10);
+                this.y = randInt(0, 190, 10);
+                i = 0;
+            }
+        }
+        this.speed = speed;
+        this.health = health;
         fill(#FF0000);
         rect(this.x, this.y, 10, 10);
     }
@@ -119,6 +146,18 @@ class Enemy {
     //@param distToMove is how far the enemy will move
     void moveY(int distToMove) {
         this.y += distToMove;    
+    }
+    
+    //The getHealth Function - Returns to the user the Enemy health
+    //@returns the current health of the Enemy Object
+    int getHealth() {
+        return this.health;   
+    }
+    
+    //The setHealth Function - Sets the health of an Enemy Object
+    //@param health is the new health of the Enemy Object
+    void setHealth(int health) {
+         this.health = health;   
     }
 }
 //--- END OF Enemy CLASS ---//
