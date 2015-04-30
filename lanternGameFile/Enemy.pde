@@ -96,13 +96,13 @@ class Enemy {
             if (diffX > 0) {
                 //Before we move we check the collisions
                 if (checkAllCollisions(this.x, this.y, 4, 0) != 4) {
-                    this.x += .5;
+                    this.x += .25;
                 }
                 //If the diffX is negative then the player is to the left
             } else {
                 //Before we move we check the collisions
                 if (checkAllCollisions(this.x, this.y, 2, 0) != 2) {
-                    this.x -= .5;
+                    this.x -= .25;
                 }
             }
         } else {
@@ -110,18 +110,51 @@ class Enemy {
             if (diffY > 0) {
                 //Before we move we check the collisions
                 if (checkAllCollisions(this.x, this.y, 3, 0) != 3) {
-                    this.y += .5;
+                    this.y += .25;
                 }
                 //If the diffY is negative then the player is above
             } else {
                 //Before we move we check the collsions
                 if (checkAllCollisions(this.x, this.y, 1, 0) != 1) {
-                    this.y -= .5;
+                    this.y -= .25;
                 }
             }
         }
         //Then we redraw the Enemy AI
         redrawEnemy();
+    }
+    
+    //The checkHit Function - Checks if the enemy was hit by a bullet
+    //@param playerX is the x coordinate of the top left corner of the player
+    //@param playerY is the y coordinate of the top left corner of the player
+    //@param playerWidthX is the length of the player on the x coordinate
+    //@param playerWidthY is the length of the player on the y coordinate
+    //@return boolean that is true when not colliding with a wall
+    boolean checkHit(float playerX, float playerY, int playerWidthX, int playerWidthY) {
+        //Uses a nested if for readability
+        //Could be combined to a single if
+        //This if statement checks the X
+        if (playerX >= (this.x-playerWidthX) && playerX <= (this.x + 5)) {
+            //This if statement checks the Y
+            if (playerY >= (this.y-playerWidthY) && playerY <= (this.y + 5)) {
+                //Returns the direction that the player is facing
+                if (this.health != 0) {
+                    this.health--;
+                }
+                return false;
+            }
+        } 
+        return true;
+    }
+    
+    //The checkAlive Function - Sees if the player is alive
+    //@returns true if the enemy's health is not equal to zero
+    boolean checkAlive() {
+        if (this.health == 0) {
+            return false;
+        } else {
+            return true;   
+        }
     }
     
     //The getX Function - Gives the X coordinate of the Enemy

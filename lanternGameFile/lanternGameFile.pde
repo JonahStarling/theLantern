@@ -42,43 +42,29 @@ void draw() {
         if (keyPressed) {
             //Normal key presses
             if (key == 'w') {
-                /*if (checkAllCollisions(x, y, 1, 0) != 1) {
-                    player001.moveY(-1);
-                    player001.changeDirection(1);
-                }*/
                 if (badDirection != 1) {
                     player001.moveY(-1);
                     player001.changeDirection(1);
                 }
             } else if (key == 'a') {
-                /*if (checkAllCollisions(x, y, 2, 0) != 2) {
-                    player001.moveX(-1);
-                    player001.changeDirection(2);
-                }*/
                 if (badDirection != 2) {
                     player001.moveX(-1);
                     player001.changeDirection(2);
                 }
             } else if (key == 's') {
-                /*if (checkAllCollisions(x, y, 3, 0) != 3) {
-                    player001.moveY(1);
-                    player001.changeDirection(3);
-                }*/
                 if (badDirection != 3) {
                     player001.moveY(1);
                     player001.changeDirection(3);
                 }
             } else if (key == 'd') {
-                /*if (checkAllCollisions(x, y, 4, 0) != 4) {
-                    player001.moveX(1);
-                    player001.changeDirection(4);
-                }*/
                 if (badDirection != 4) {
                     player001.moveX(1);
                     player001.changeDirection(4);
                 }
             } else if (key == ' ') {
-                bullets.add(new Bullet(x+4.5,y+4.5,player001.getDirection()));
+                if (i == 10) {
+                    bullets.add(new Bullet(x+2,y+2,player001.getDirection()));
+                }
             } else if (key == 'q') {
                 player001.rotatePlayerLeft();
             } else if (key == 'e') {
@@ -93,6 +79,7 @@ void draw() {
                 player001.subtractCoins(player001.getNumOfCoins());
                 generateNewLevel(level);
             }
+            //Checking if there is a collision and taking note of the current direction
             x = player001.getX();
             y = player001.getY();
             badDirection = checkAllCollisions(x, y, player001.getDirection(), 0);
@@ -109,7 +96,6 @@ void draw() {
         for (int i = 0; i < enemies.size(); i++) {
             enemies.get(i).redrawEnemy();   
         }
-        
     } else if (isGameOver == 1) {
         //The game has been won
         //This is a delay timer
@@ -118,7 +104,6 @@ void draw() {
         while(millis() < m+3000);
         //Generating a new level
         level++;
-        println(level);
         generateNewLevel(level);
         //Reset the value
         isGameOver = 0;   
@@ -139,10 +124,28 @@ void draw() {
     if (isGameOver == 0) {
         //Loops through the Bullets and moves them
         for (int i = 0; i < bullets.size(); i++) {
+            for (int j = 0; j < walls.size(); j++) {
+                if (!walls.get(j).checkCollision(bullets.get(i).getX(), bullets.get(i).getY(), 1, 1)) {
+                    bullets.get(i).setActive(false);   
+                }
+            }
+            for (int j = 0; j < enemies.size(); j++) {
+                if (!enemies.get(j).checkHit(bullets.get(i).getX(), bullets.get(i).getY(), 1, 1)) {
+                    bullets.get(i).setActive(false);   
+                    if (!enemies.get(j).checkAlive()) {
+                        enemies.remove(j);   
+                    }
+                }
+            }
             if (bullets.get(i).getActive()) {
                 bullets.get(i).shootBullet();
             }
         }
+    }
+    if (i < 11) {
+        i++;
+    } else {
+        i = 0;   
     }
 }
 
@@ -312,7 +315,7 @@ void generateNewLevel(int level) {
     enemies = new ArrayList<Enemy>();
     //Creating the enemies to populate the ArrayList
     for (int i = 0; i != level; i++) {
-        enemies.add(new Enemy(randInt(30, 190, 10), randInt(30, 190, 10)));
+        enemies.add(new Enemy(randInt(30, 190, 10), randInt(30, 190, 10),level,level));
     }
     //Resetting the player back to the start
     player001.setX(0);

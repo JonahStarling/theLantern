@@ -26,10 +26,22 @@ class Bullet {
         this.y += distToMove;    
     }
     
+    //The getY Function - Gives the Y coordinate of the Bullet
+    //@returns the Y location of the Bullet
+    float getY() {
+        return this.y;
+    }
+    
     //The moveX Function - Moves the X coordinate of the Bullet
     //@param distToMove is how far the bullet will move
     void moveX(float distToMove) {
         this.x += distToMove;    
+    }
+    
+    //The getX Function - Gives the X coordinate of the Bullet
+    //@returns the X location of the Bullet
+    float getX() {
+        return this.x;
     }
     
     //The redrawBullet Function - Redraws the Bullet Object
@@ -63,6 +75,12 @@ class Bullet {
     //@returns if the bullet is active
     boolean getActive() {
         return this.active;   
+    }
+    
+    //The setActive Function - Changes the active to whatever the parameter is
+    //@param active is whether or not the bullet should still be active
+    void setActive(boolean active) {
+        this.active = active;   
     }
 }
 //--- END OF Bullet CLASS ---//
