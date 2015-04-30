@@ -41,13 +41,13 @@ class Bullet {
     //The shootBullet Function - Moves the Bullet
     void shootBullet() {
         if (this.direction == 1) {
-            moveY(-10.0);
+            moveY(-2.0);
         } else if (this.direction == 2) {
-            moveX(-10.0);
+            moveX(-2.0);
         } else if (this.direction == 3) {
-            moveY(10.0);
+            moveY(2.0);
         } else {
-            moveX(10.0);
+            moveX(2.0);
         }
         redrawBullet();
     }

@@ -1,7 +1,8 @@
 import java.util.Random;
 
 //Creating variables and objects to be used in game
-int i, x, y, isGameOver, level;
+int i, isGameOver, level, badDirection;
+float x, y;
 Coin coin001;
 Enemy enemy001;
 Player player001;
@@ -18,13 +19,13 @@ void setup() {
     noCursor();
     level = 1;
     //Drawing the Player
-    player001 = new Player(0,0,10,10,0);
+    player001 = new Player(0,0,5,5,0);
     generateNewLevel(level);
     isGameOver = 0;
     x = player001.getX();
     y = player001.getY();
     bullets = new ArrayList<Bullet>();
-    bullets.add(new Bullet(x+4.5,y+4.5,1));
+    badDirection = 0;
 }
 
 
@@ -41,44 +42,39 @@ void draw() {
         if (keyPressed) {
             //Normal key presses
             if (key == 'w') {
-                if (checkAllCollisions(x, y, 1, 0) != 1) {
-                    player001.moveY(-10);
+                /*if (checkAllCollisions(x, y, 1, 0) != 1) {
+                    player001.moveY(-1);
+                    player001.changeDirection(1);
+                }*/
+                if (badDirection != 1) {
+                    player001.moveY(-1);
                     player001.changeDirection(1);
                 }
             } else if (key == 'a') {
-                if (checkAllCollisions(x, y, 2, 0) != 2) {
-                    player001.moveX(-10);
+                /*if (checkAllCollisions(x, y, 2, 0) != 2) {
+                    player001.moveX(-1);
+                    player001.changeDirection(2);
+                }*/
+                if (badDirection != 2) {
+                    player001.moveX(-1);
                     player001.changeDirection(2);
                 }
             } else if (key == 's') {
-                if (checkAllCollisions(x, y, 3, 0) != 3) {
-                    player001.moveY(10);
+                /*if (checkAllCollisions(x, y, 3, 0) != 3) {
+                    player001.moveY(1);
+                    player001.changeDirection(3);
+                }*/
+                if (badDirection != 3) {
+                    player001.moveY(1);
                     player001.changeDirection(3);
                 }
             } else if (key == 'd') {
-                if (checkAllCollisions(x, y, 4, 0) != 4) {
-                    player001.moveX(10);
+                /*if (checkAllCollisions(x, y, 4, 0) != 4) {
+                    player001.moveX(1);
                     player001.changeDirection(4);
-                }
-                //Jump key presses
-            } else if (key == 'i') {
-                if (checkAllCollisions(x, y, 5, 0) != 5) {
-                    player001.moveY(-20);
-                    player001.changeDirection(1);
-                }
-            } else if (key == 'j') {
-                if (checkAllCollisions(x, y, 6, 0) != 6) {
-                    player001.moveX(-20);
-                    player001.changeDirection(2);
-                }
-            } else if (key == 'k') {
-                if (checkAllCollisions(x, y, 7, 0) != 7) {
-                    player001.moveY(20);
-                    player001.changeDirection(3);
-                }
-            } else if (key == 'l') {
-                if (checkAllCollisions(x, y, 8, 0) != 8) {
-                    player001.moveX(20);
+                }*/
+                if (badDirection != 4) {
+                    player001.moveX(1);
                     player001.changeDirection(4);
                 }
             } else if (key == ' ') {
@@ -97,6 +93,9 @@ void draw() {
                 player001.subtractCoins(player001.getNumOfCoins());
                 generateNewLevel(level);
             }
+            x = player001.getX();
+            y = player001.getY();
+            badDirection = checkAllCollisions(x, y, player001.getDirection(), 0);
         } 
         //Refreshing the board
         fill(#0000FF);
@@ -104,17 +103,12 @@ void draw() {
         //Redrawing the player
         player001.redrawPlayer();
         //This allows the Enemy to move only once every 4 frames (twice a second)
-        if (i == 4) {
-            for (int i = 0; i < enemies.size(); i++) {
-                enemies.get(i).moveTowardsPlayer(x, y);   
-            }
-            i = 0;
-        } else {
-            for (int i = 0; i < enemies.size(); i++) {
-                enemies.get(i).redrawEnemy();   
-            }
+        for (int i = 0; i < enemies.size(); i++) {
+            enemies.get(i).moveTowardsPlayer(x, y);   
         }
-        i++;
+        for (int i = 0; i < enemies.size(); i++) {
+            enemies.get(i).redrawEnemy();   
+        }
         
     } else if (isGameOver == 1) {
         //The game has been won
@@ -134,7 +128,7 @@ void draw() {
         //Checking on the coins
         for (int i = 0; i < coins.size(); i++) {
             //Checks if the coins have been picked up
-            if (!coins.get(i).found && coins.get(i).pickedUp(x, y, 10, 10)) {
+            if (!coins.get(i).found && coins.get(i).pickedUp(x, y, 5, 5)) {
                 player001.addCoins(1);
             }
         }
@@ -207,40 +201,27 @@ void refreshBoard() {
 //@param direction is the way the player is trying to walk
 //@param noCollision is the value to return if no collisions are detected
 //@return collision is the direction of the collision or the noCollision default
-int checkAllCollisions(int x, int y, int direction, int noCollision) {
+int checkAllCollisions(float x, float y, int direction, int noCollision) {
     int collision = noCollision;
     //Updates the movement values to see whether the step you want to take is ok
     switch(direction) {
         //Normal stepping
     case 1: 
-        y -= 9; 
+        y -= 1; 
         break;
     case 2: 
-        x -= 9;
+        x -= 1;
         break;
     case 3: 
-        y += 9;
+        y += 1;
         break;
     case 4: 
-        x += 9;
-        break;
-        //Jumping
-    case 5: 
-        y -= 20;
-        break;
-    case 6: 
-        x -= 20;
-        break;
-    case 7: 
-        y += 20;
-        break;
-    case 8: 
-        x += 20;
+        x += 1;
         break;
     }
     //Loops through the walls to get the collision
     for (int i = 0; i < walls.size (); i++) {
-        if (!walls.get(i).checkCollision(x, y, 10, 10)) {
+        if (!walls.get(i).checkCollision(x, y, player001.getSizeX(), player001.getSizeY())) {
             collision = direction;
         }
     }
@@ -249,9 +230,9 @@ int checkAllCollisions(int x, int y, int direction, int noCollision) {
         collision = direction;
     } else if (y < 0) {
         collision = direction;
-    } else if (x > 190) {
+    } else if (x > 195) {
         collision = direction;
-    } else if (y > 190) {
+    } else if (y > 195) {
         collision = direction;
     }
     return collision;
@@ -284,8 +265,8 @@ int checkGameOver(Player player001) {
     //Loops through enemies
     for (int i = 0; i < enemies.size(); i++) {
         //Checks if the player has lost
-        if (player001.getX() == enemies.get(i).getX()) {
-            if (player001.getY() == enemies.get(i).getY()) { 
+        if (x > (enemies.get(i).getX()-player001.getSizeX()) && x < (enemies.get(i).getX() + 5)) {
+            if (y > (enemies.get(i).getY()-player001.getSizeY()) && y < (enemies.get(i).getY() + 5)) { 
                //Game Loss
                isGameOver = 2;
                //Draw the Game Over Screen

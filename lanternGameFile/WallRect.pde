@@ -46,13 +46,13 @@ class WallRect {
     //@param playerWidthX is the length of the player on the x coordinate
     //@param playerWidthY is the length of the player on the y coordinate
     //@return boolean that is true when not colliding with a wall
-    boolean checkCollision(int playerX, int playerY, int playerWidthX, int playerWidthY) {
+    boolean checkCollision(float playerX, float playerY, int playerWidthX, int playerWidthY) {
         //Uses a nested if for readability
         //Could be combined to a single if
         //This if statement checks the X
-        if (playerX > (this.x-playerWidthX) && playerX < (this.x + this.sizeX)) {
+        if (playerX >= (this.x-playerWidthX) && playerX <= (this.x + this.sizeX)) {
             //This if statement checks the Y
-            if (playerY > (this.y-playerWidthY) && playerY < (this.y + this.sizeY)) {
+            if (playerY >= (this.y-playerWidthY) && playerY <= (this.y + this.sizeY)) {
                 //Returns the direction that the player is facing
                 return false;
             }

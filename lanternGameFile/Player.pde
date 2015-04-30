@@ -3,8 +3,8 @@
 //Functions include 4 Constructors, Accessors, Mutators, and more
 class Player {
     //Variables for the Player Object/Class
-    private int x;
-    private int y;
+    private float x;
+    private float y;
     private int sizeX;
     private int sizeY;
     private int numOfCoins;
@@ -24,7 +24,7 @@ class Player {
     //The Basic Player Constructor - Creates a Player with custom X and Y coordinates
     //@param x is the x coordinate of the top left corner of the player
     //@param y is the y coordinate of the top left corner of the player
-    Player(int x, int y) {
+    Player(float x, float y) {
         this.x = x;
         this.y = y;
         this.sizeX = 10;
@@ -39,7 +39,7 @@ class Player {
     //@param y is the y coordinate of the top left corner of the player
     //@param sizeX is the length of the player on the x coordinate plane
     //@param sizeY is the length of the player on the y coordinate plane
-    Player(int x, int y, int sizeX, int sizeY) {
+    Player(float x, float y, int sizeX, int sizeY) {
         this.x = x;
         this.y = y;
         this.sizeX = sizeX;
@@ -55,7 +55,7 @@ class Player {
     //@param sizeX is the length of the player on the x coordinate plane
     //@param sizeY is the length of the player on the y coordinate plane
     //@param numOfCoins is the number of coins the player has
-    Player(int x, int y, int sizeX, int sizeY, int numOfCoins) {
+    Player(float x, float y, int sizeX, int sizeY, int numOfCoins) {
         this.x = x;
         this.y = y;
         this.sizeX = sizeX;
@@ -67,37 +67,37 @@ class Player {
 
     //The getX Function - Gives the X coordinate of the Player
     //@returns the X location of the Player
-    int getX() {
+    float getX() {
         return this.x;
     }
     
     //The setX Function - Sets the X coordinate of the Player
     //@param x is the new x location
-    void setX(int x) {
+    void setX(float x) {
         this.x = x;
     }
     
     //The moveX Function - Moves the X coordinate of the Player
     //@param distToMove is how far the player will move
-    void moveX(int distToMove) {
+    void moveX(float distToMove) {
         this.x += distToMove;    
     }
 
     //The getY Function - Gives the Y coordinate of the Player
     //@returns the Y location of the Player
-    int getY() {
+    float getY() {
         return this.y;
     }
     
     //The setY Function - Sets the Y coordinate of the Player
     //@param y is the new y location
-    void setY(int y) {
+    void setY(float y) {
         this.y = y;
     }
     
     //The moveY Function - Moves the Y coordinate of the Player
     //@param distToMove is how far the player will move
-    void moveY(int distToMove) {
+    void moveY(float distToMove) {
         this.y += distToMove;    
     }
 

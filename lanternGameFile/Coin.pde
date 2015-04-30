@@ -16,7 +16,7 @@ class Coin {
         //Loops through all of the walls
         for (int i = 0; i < walls.size (); i++) {
             //Checks to see if the coin is stuck in a wall
-            if (!walls.get(i).checkCollision(this.x, this.y, 10, 10)) {
+            if (!walls.get(i).checkCollision(this.x, this.y, 5, 5)) {
                 //If so then when change its location and try again
                 this.x = randInt(0, 190, 10);
                 this.y = randInt(0, 190, 10);
@@ -26,7 +26,7 @@ class Coin {
         this.found = false;
         //Draws the Coin
         fill(#FFFF00);
-        rect(x, y, 10, 10);
+        rect(x, y, 5, 5);
     } 
 
     //The redrawCoin Function - Redraws the Coin
@@ -34,7 +34,7 @@ class Coin {
         //Only redraws the coin if it hasn't been found
         if (!this.found) {
             fill(#FFFF00);
-            rect(this.x, this.y, 10, 10);
+            rect(this.x, this.y, 5, 5);
         }
     }
 
@@ -44,10 +44,10 @@ class Coin {
     //@param playerWidthX is the length of the player on the x coordinate
     //@param playerWidthY is the length of the player on the y coordinate
     //@return boolean that is true when the player picks up the coin
-    boolean pickedUp(int playerX, int playerY, int playerWidthX, int playerWidthY) {
+    boolean pickedUp(float playerX, float playerY, int playerWidthX, int playerWidthY) {
         //Checks the X coordinate first then the Y coordinate for speed and readability
-        if (playerX > (this.x-playerWidthX) && playerX < (this.x + 10)) {
-            if (playerY > (this.y-playerWidthY) && playerY < (this.y + 10)) {
+        if (playerX > (this.x-playerWidthX) && playerX < (this.x + 5)) {
+            if (playerY > (this.y-playerWidthY) && playerY < (this.y + 5)) {
                 this.found = true;
                 return true;
             }
