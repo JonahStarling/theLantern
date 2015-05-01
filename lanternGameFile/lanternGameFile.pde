@@ -6,6 +6,7 @@ float x, y;
 Coin coin001;
 Enemy enemy001;
 Player player001;
+Lantern lantern;
 Bullet bullet001;
 ArrayList<WallRect> walls;
 ArrayList<Bullet> bullets;
@@ -20,10 +21,11 @@ void setup() {
     level = 1;
     //Drawing the Player
     player001 = new Player(0,0,5,5,0);
+    lantern = new Lantern(player001.getX(), player001.getY(), 20, 20);
     generateNewLevel(level);
     isGameOver = 0;
     x = player001.getX();
-    y = player001.getY();
+
     bullets = new ArrayList<Bullet>();
     badDirection = 0;
 }
@@ -89,6 +91,8 @@ void draw() {
         refreshBoard();
         //Redrawing the player
         player001.redrawPlayer();
+        lantern.setX(player001.getX()+2.5);
+        lantern.setY(player001.getY()+2.5);
         //This allows the Enemy to move only once every 4 frames (twice a second)
         for (int i = 0; i < enemies.size(); i++) {
             enemies.get(i).moveTowardsPlayer(x, y);   
@@ -96,6 +100,7 @@ void draw() {
         for (int i = 0; i < enemies.size(); i++) {
             enemies.get(i).redrawEnemy();   
         }
+        lantern.redrawLantern();
     } else if (isGameOver == 1) {
         //The game has been won
         //This is a delay timer
@@ -127,6 +132,7 @@ void draw() {
             for (int j = 0; j < walls.size(); j++) {
                 if (!walls.get(j).checkCollision(bullets.get(i).getX(), bullets.get(i).getY(), 1, 1)) {
                     bullets.get(i).setActive(false);   
+                    
                 }
             }
             for (int j = 0; j < enemies.size(); j++) {
@@ -139,6 +145,8 @@ void draw() {
             }
             if (bullets.get(i).getActive()) {
                 bullets.get(i).shootBullet();
+            } else {
+                bullets.remove(i);   
             }
         }
     }
