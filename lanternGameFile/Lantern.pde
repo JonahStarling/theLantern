@@ -97,6 +97,12 @@ class Lantern {
         this.fuelLevel = fuelLevel;   
     }
     
+    //The addFuel Function - Adds fuel to the Lantern
+    //@param fuel is how much fuel to add to the fuelLevel
+    void addFuel(float fuel) {
+        this.fuelLevel += fuel;   
+    }
+    
     //The updateFuelLevel Function - Diminshes the fuel overtime based on size
     void updateFuelLevel() {
         this.fuelLevel -= pow(2, this.size - 1);

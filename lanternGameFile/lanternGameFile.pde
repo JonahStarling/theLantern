@@ -8,6 +8,7 @@ Enemy enemy001;
 Player player001;
 Lantern lantern;
 Bullet bullet001;
+ArrayList<FuelBlock> fuels;
 ArrayList<WallRect> walls;
 ArrayList<Bullet> bullets;
 ArrayList<Enemy> enemies;
@@ -25,8 +26,8 @@ void setup() {
     generateNewLevel(level);
     isGameOver = 0;
     x = player001.getX();
-
     bullets = new ArrayList<Bullet>();
+    fuels = new ArrayList<FuelBlock>();
     badDirection = 0;
 }
 
@@ -80,6 +81,7 @@ void draw() {
                 }
                 player001.subtractCoins(player001.getNumOfCoins());
                 generateNewLevel(level);
+            //Keys 1-5 change the size of the lantern
             } else if (key == '1') {
                 lantern.setSize(1);   
             } else if (key == '2') {
@@ -133,6 +135,14 @@ void draw() {
                 player001.addCoins(1);
             }
         }
+        //Check on the Fuel Blocks
+        for (int i = 0; i < fuels.size(); i++) {
+            //Checks if the fuels have been picked up
+            if (fuels.get(i).pickedUp(x, y, 5, 5)) {
+                lantern.addFuel(fuels.get(i).getFuel());
+                fuels.remove(i);
+            }
+        }
         //Checks if the game is over and stores its value
         isGameOver = checkGameOver();   
     }
@@ -142,15 +152,20 @@ void draw() {
         for (int i = 0; i < bullets.size(); i++) {
             for (int j = 0; j < walls.size(); j++) {
                 if (!walls.get(j).checkCollision(bullets.get(i).getX(), bullets.get(i).getY(), 1, 1)) {
-                    bullets.get(i).setActive(false);   
-                    
+                    bullets.get(i).setActive(false);
                 }
             }
             for (int j = 0; j < enemies.size(); j++) {
                 if (!enemies.get(j).checkHit(bullets.get(i).getX(), bullets.get(i).getY(), 1, 1)) {
                     bullets.get(i).setActive(false);   
                     if (!enemies.get(j).checkAlive()) {
-                        enemies.remove(j);   
+                        //The enemy has a 1 in 5 chance of dropping a fuel block
+                        if (randInt(1,5) == 1) {
+                            fuels.add(new FuelBlock(enemies.get(j).getX(), enemies.get(j).getY(), ((level*100)+600)));
+                        }
+                        //Player gets coins for killing an enemy
+                        player001.addCoins(level);
+                        enemies.remove(j);
                     }
                 }
             }
@@ -205,13 +220,17 @@ void refreshBoard() {
     fill(#888888);
     rect(0, 0, 200, 200);
     fill(#000000);
-    //Redrawing the walls
+    //Redrawing the Walls
     for (int i = 0; i < walls.size (); i++) {
         walls.get(i).redrawWall();
     }
-    //Redrawing the coins
+    //Redrawing the Coins
     for (int i = 0; i < coins.size(); i++) {
         coins.get(i).redrawCoin();   
+    }
+    //Redrawing the Fuel Blocks
+    for (int i = 0; i < fuels.size(); i++) {
+        fuels.get(i).redrawFuelBlock();   
     }
     fill(#0000FF);
 }
@@ -284,7 +303,10 @@ int checkGameOver() {
             fill(#000000);
             textSize(16);
             textAlign(CENTER);
-            text("YOU WIN - LEVEL UP", 100, 100);
+            String levelString = "LEVEL " + level + " COMPLETE";
+            text(levelString, 100, 100);
+            String scoreString = "CURRENT SCORE: " + player001.getNumOfCoins();
+            text(scoreString, 100, 120);
         }
         //Loops through enemies
         for (int i = 0; i < enemies.size(); i++) {
@@ -299,7 +321,7 @@ int checkGameOver() {
                    fill(#000000);
                    textSize(16);
                    textAlign(CENTER);
-                   text("GAME OVER - YOU LOSE", 100, 100);
+                   text("GAME OVER - YOU DIED", 100, 100);
                    String scoreString = "SCORE: " + player001.getNumOfCoins();
                    text(scoreString, 100, 120);
                 }
@@ -313,7 +335,7 @@ int checkGameOver() {
         fill(#000000);
         textSize(16);
         textAlign(CENTER);
-        text("GAME OVER - YOU LOSE", 100, 100);
+        text("GAME OVER - NO FUEL", 100, 100);
         String scoreString = "SCORE: " + player001.getNumOfCoins();
         text(scoreString, 100, 120);
     }
