@@ -21,7 +21,7 @@ void setup() {
     level = 1;
     //Drawing the Player
     player001 = new Player(0,0,5,5,0);
-    lantern = new Lantern(player001.getX(), player001.getY(), 20, 20);
+    lantern = new Lantern(player001.getX(), player001.getY(), 1, 6000);
     generateNewLevel(level);
     isGameOver = 0;
     x = player001.getX();
@@ -80,6 +80,16 @@ void draw() {
                 }
                 player001.subtractCoins(player001.getNumOfCoins());
                 generateNewLevel(level);
+            } else if (key == '1') {
+                lantern.setSize(1);   
+            } else if (key == '2') {
+                lantern.setSize(2);
+            } else if (key == '3') {
+                lantern.setSize(3);
+            } else if (key == '4') {
+                lantern.setSize(4);
+            } else if (key == '5') {
+                lantern.setSize(5);
             }
             //Checking if there is a collision and taking note of the current direction
             x = player001.getX();
@@ -100,13 +110,14 @@ void draw() {
         for (int i = 0; i < enemies.size(); i++) {
             enemies.get(i).redrawEnemy();   
         }
-        lantern.redrawLantern();
     } else if (isGameOver == 1) {
         //The game has been won
         //This is a delay timer
         //It pauses for 3 seconds
         int m = millis();
         while(millis() < m+3000);
+        lantern.setX(2.5);
+        lantern.setY(2.5);
         //Generating a new level
         level++;
         generateNewLevel(level);
@@ -123,7 +134,7 @@ void draw() {
             }
         }
         //Checks if the game is over and stores its value
-        isGameOver = checkGameOver(player001);   
+        isGameOver = checkGameOver();   
     }
     //We check if the game is over so bullets only appear in game
     if (isGameOver == 0) {
@@ -149,6 +160,7 @@ void draw() {
                 bullets.remove(i);   
             }
         }
+        lantern.redrawLantern();
     }
     if (i < 11) {
         i++;
@@ -252,45 +264,58 @@ int checkAllCollisions(float x, float y, int direction, int noCollision) {
 //The checkGameOver Function - Checks if the user has the coin or has died
 //@param player001 is the player object that the user controls
 //@return isGameOver is a 0 if no, 1 if win, 2 if loss
-int checkGameOver(Player player001) {
+int checkGameOver() {
     //This is the value we will return
     int isGameOver = 0;
-    //Checks to see if the user has the coin
-    boolean allCoinsFound = true;
-    for (int i = 0; i < coins.size(); i++) {
-        if (!coins.get(i).getFound()) {
-            allCoinsFound = false;   
+    if (lantern.getFuelLevel() > 0) {
+        //Checks to see if the user has the coin
+        boolean allCoinsFound = true;
+        for (int i = 0; i < coins.size(); i++) {
+            if (!coins.get(i).getFound()) {
+                allCoinsFound = false;   
+            }
         }
-    }
-    if (allCoinsFound) {
-        //Level beaten
-        isGameOver = 1;   
-        //Draw the Game Won Screen
-        fill(#00FF00);
+        if (allCoinsFound) {
+            //Level beaten
+            isGameOver = 1;   
+            //Draw the Game Won Screen
+            fill(#00FF00);
+            rect(0,0,200,200);
+            fill(#000000);
+            textSize(16);
+            textAlign(CENTER);
+            text("YOU WIN - LEVEL UP", 100, 100);
+        }
+        //Loops through enemies
+        for (int i = 0; i < enemies.size(); i++) {
+            //Checks if the player has lost
+            if (x > (enemies.get(i).getX()-player001.getSizeX()) && x < (enemies.get(i).getX() + 5)) {
+                if (y > (enemies.get(i).getY()-player001.getSizeY()) && y < (enemies.get(i).getY() + 5)) { 
+                   //Game Loss
+                   isGameOver = 2;
+                   //Draw the Game Over Screen
+                   fill(#FF0000);
+                   rect(0,0,200,200);
+                   fill(#000000);
+                   textSize(16);
+                   textAlign(CENTER);
+                   text("GAME OVER - YOU LOSE", 100, 100);
+                   String scoreString = "SCORE: " + player001.getNumOfCoins();
+                   text(scoreString, 100, 120);
+                }
+            }
+        }
+    } else {
+        isGameOver = 2;
+        //Draw the Game Over Screen
+        fill(#FF0000);
         rect(0,0,200,200);
         fill(#000000);
         textSize(16);
         textAlign(CENTER);
-        text("YOU WIN - LEVEL UP", 100, 100);
-    }
-    //Loops through enemies
-    for (int i = 0; i < enemies.size(); i++) {
-        //Checks if the player has lost
-        if (x > (enemies.get(i).getX()-player001.getSizeX()) && x < (enemies.get(i).getX() + 5)) {
-            if (y > (enemies.get(i).getY()-player001.getSizeY()) && y < (enemies.get(i).getY() + 5)) { 
-               //Game Loss
-               isGameOver = 2;
-               //Draw the Game Over Screen
-               fill(#FF0000);
-               rect(0,0,200,200);
-               fill(#000000);
-               textSize(16);
-               textAlign(CENTER);
-               text("GAME OVER - YOU LOSE", 100, 100);
-               String scoreString = "SCORE: " + player001.getNumOfCoins();
-               text(scoreString, 100, 120);
-            }
-        }
+        text("GAME OVER - YOU LOSE", 100, 100);
+        String scoreString = "SCORE: " + player001.getNumOfCoins();
+        text(scoreString, 100, 120);
     }
     return isGameOver;
 }
@@ -329,5 +354,8 @@ void generateNewLevel(int level) {
     player001.setX(0);
     player001.setY(0);
     player001.redrawPlayer();
+    lantern.setFuelLevel(6000);
+    lantern.setSize(1);
+    lantern.redrawLantern();
     i = 0;
 }
