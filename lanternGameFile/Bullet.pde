@@ -47,19 +47,19 @@ class Bullet {
     //The redrawBullet Function - Redraws the Bullet Object
     void redrawBullet() {
         fill(#00FF00);
-        rect(this.x, this.y, 2, 2);   
+        rect(this.x, this.y, 3, 3);   
     }
     
     //The shootBullet Function - Moves the Bullet
     void shootBullet() {
         if (this.direction == 1) {
-            moveY(-2.0);
+            moveY(-4.0);
         } else if (this.direction == 2) {
-            moveX(-2.0);
+            moveX(-4.0);
         } else if (this.direction == 3) {
-            moveY(2.0);
+            moveY(4.0);
         } else {
-            moveX(2.0);
+            moveX(4.0);
         }
         redrawBullet();
     }

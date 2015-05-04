@@ -42,8 +42,8 @@ class Lantern {
             fill(#000000, 0);
         }
         //The stroke weight is set high so it covers the entire screen
-        strokeWeight(350);
-        ellipse(this.x, this.y, 300-((this.size-1)*25), 300-((this.size-1)*25));
+        strokeWeight(1400);
+        ellipse(this.x, this.y, 1200-((this.size-1)*25), 1200-((this.size-1)*25));
         //Reset the stroke weight
         strokeWeight(1);
         updateFuelLevel();

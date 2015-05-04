@@ -14,8 +14,8 @@ class Player {
     Player() {
         this.x = 0;
         this.y = 0;
-        this.sizeX = 10;
-        this.sizeY = 10;
+        this.sizeX = 20;
+        this.sizeY = 20;
         this.numOfCoins = 0;
         this.direction = 3;
         redrawPlayer();
@@ -27,8 +27,8 @@ class Player {
     Player(float x, float y) {
         this.x = x;
         this.y = y;
-        this.sizeX = 10;
-        this.sizeY = 10;
+        this.sizeX = 20;
+        this.sizeY = 20;
         this.numOfCoins = 0;
         this.direction = 3;
         redrawPlayer();
@@ -63,6 +63,50 @@ class Player {
         this.numOfCoins = numOfCoins;
         this.direction = 3;
         redrawPlayer();
+    }
+    
+    void updatePlayerAnimation(int i, PImage[] playerImages) {
+        if (i > 15) {
+            if (this.direction == 2) {
+                image(playerImages[3], this.x, this.y, this.sizeX, this.sizeY);
+            } else if (this.direction == 4) {
+                image(playerImages[7], this.x, this.y, this.sizeX, this.sizeY);
+            } else if (this.direction == 1) {
+                image(playerImages[11], this.x, this.y, this.sizeX, this.sizeY);
+            } else {
+                image(playerImages[9], this.x, this.y, this.sizeX, this.sizeY);
+            }
+        } else if (i > 10) {
+            if (this.direction == 2) {
+                image(playerImages[2], this.x, this.y, this.sizeX, this.sizeY);
+            } else if (this.direction == 4) {
+                image(playerImages[6], this.x, this.y, this.sizeX, this.sizeY);
+            } else if (this.direction == 1) {
+                image(playerImages[11], this.x, this.y, this.sizeX, this.sizeY);
+            } else {
+                image(playerImages[9], this.x, this.y, this.sizeX, this.sizeY);
+            }
+        } else if (i > 5) {
+            if (this.direction == 2) {
+                image(playerImages[1], this.x, this.y, this.sizeX, this.sizeY);
+            } else if (this.direction == 4) {
+                image(playerImages[5], this.x, this.y, this.sizeX, this.sizeY);
+            } else if (this.direction == 1) {
+                image(playerImages[10], this.x, this.y, this.sizeX, this.sizeY);
+            } else {
+                image(playerImages[8], this.x, this.y, this.sizeX, this.sizeY);
+            }
+        } else {
+            if (this.direction == 2) {
+                image(playerImages[0], this.x, this.y, this.sizeX, this.sizeY);
+            } else if (this.direction == 4) {
+                image(playerImages[4], this.x, this.y, this.sizeX, this.sizeY);
+            } else if (this.direction == 1) {
+                image(playerImages[10], this.x, this.y, this.sizeX, this.sizeY);
+            } else {
+                image(playerImages[8], this.x, this.y, this.sizeX, this.sizeY);
+            }
+        }
     }
 
     //The getX Function - Gives the X coordinate of the Player

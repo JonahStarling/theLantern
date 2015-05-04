@@ -31,7 +31,7 @@ class FuelBlock {
     //The redrawFuelBlock Function - Redraws the fuel block where it is
     void redrawFuelBlock() {
         fill(#FFA500);
-        rect(this.x, this.y, 5, 5);   
+        rect(this.x, this.y, 20, 20);   
     }
     
     //The pickedUp Function - Sees if the player has picked up the Fuel Block yet

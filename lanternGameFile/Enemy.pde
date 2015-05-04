@@ -19,15 +19,15 @@ class Enemy {
             //Checks to see if the enemy is stuck in a wall
             if (!walls.get(i).checkCollision(this.x, this.y, 5, 5)) {
                 //If so then when change its location and try again
-                this.x = randInt(0, 190, 10);
-                this.y = randInt(0, 190, 10);
+                this.x = randInt(0, 780, 20);
+                this.y = randInt(0, 780, 20);
                 i = 0;
             }
         }
         this.speed = 10;
         this.health = 1;
         fill(#FF0000);
-        rect(this.x, this.y, 5, 5);
+        rect(this.x, this.y, 20, 20);
     }
 
     //The Speed Enemy Constructor - Creates an Enemy object with custom speed
@@ -42,15 +42,15 @@ class Enemy {
             //Checks to see if the enemy is stuck in a wall
             if (!walls.get(i).checkCollision(this.x, this.y, 5, 5)) {
                 //If so then when change its location and try again
-                this.x = randInt(0, 190, 10);
-                this.y = randInt(0, 190, 10);
+                this.x = randInt(0, 780, 20);
+                this.y = randInt(0, 780, 20);
                 i = 0;
             }
         }
         this.speed = speed;
         this.health = 1;
         fill(#FF0000);
-        rect(this.x, this.y, 5, 5);
+        rect(this.x, this.y, 20, 20);
     }
     
     //The Health Enemy Constructor - Creates an Enemy object with a set health
@@ -64,10 +64,10 @@ class Enemy {
         //Loops through all of the walls
         for (int i = 0; i < walls.size (); i++) {
             //Checks to see if the enemy is stuck in a wall
-            if (!walls.get(i).checkCollision(this.x, this.y, 5, 5)) {
+            if (!walls.get(i).checkCollision(this.x, this.y, 20, 20)) {
                 //If so then when change its location and try again
-                this.x = randInt(0, 190, 10);
-                this.y = randInt(0, 190, 10);
+                this.x = randInt(0, 780, 20);
+                this.y = randInt(0, 780, 20);
                 i = 0;
             }
         }
@@ -80,7 +80,7 @@ class Enemy {
     //The redrawEnemy Function - Redraws the Enemy
     void redrawEnemy() {
         fill(#FF0000);
-        rect(this.x, this.y, 5, 5);
+        rect(this.x, this.y, 20, 20);
     }
 
     //The moveTowardsPlayer Function - Decides where the enemy AI should move next
@@ -96,13 +96,13 @@ class Enemy {
             if (diffX > 0) {
                 //Before we move we check the collisions
                 if (checkAllCollisions(this.x, this.y, 4, 0) != 4) {
-                    this.x += .25;
+                    this.x += .5;
                 }
                 //If the diffX is negative then the player is to the left
             } else {
                 //Before we move we check the collisions
                 if (checkAllCollisions(this.x, this.y, 2, 0) != 2) {
-                    this.x -= .25;
+                    this.x -= .5;
                 }
             }
         } else {
@@ -110,13 +110,13 @@ class Enemy {
             if (diffY > 0) {
                 //Before we move we check the collisions
                 if (checkAllCollisions(this.x, this.y, 3, 0) != 3) {
-                    this.y += .25;
+                    this.y += .5;
                 }
                 //If the diffY is negative then the player is above
             } else {
                 //Before we move we check the collsions
                 if (checkAllCollisions(this.x, this.y, 1, 0) != 1) {
-                    this.y -= .25;
+                    this.y -= .5;
                 }
             }
         }
@@ -134,9 +134,9 @@ class Enemy {
         //Uses a nested if for readability
         //Could be combined to a single if
         //This if statement checks the X
-        if (playerX >= (this.x-playerWidthX) && playerX <= (this.x + 5)) {
+        if (playerX >= (this.x-playerWidthX) && playerX <= (this.x + 20)) {
             //This if statement checks the Y
-            if (playerY >= (this.y-playerWidthY) && playerY <= (this.y + 5)) {
+            if (playerY >= (this.y-playerWidthY) && playerY <= (this.y + 20)) {
                 //Returns the direction that the player is facing
                 if (this.health != 0) {
                     this.health--;

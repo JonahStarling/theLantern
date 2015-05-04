@@ -1,13 +1,14 @@
 import java.util.Random;
 
 //Creating variables and objects to be used in game
-int i, isGameOver, level, badDirection;
+int i, isGameOver, level, badDirection, k;
 float x, y;
 Coin coin001;
 Enemy enemy001;
 Player player001;
 Lantern lantern;
 Bullet bullet001;
+PImage[] playerImages;
 ArrayList<FuelBlock> fuels;
 ArrayList<WallRect> walls;
 ArrayList<Bullet> bullets;
@@ -16,18 +17,32 @@ ArrayList<Coin> coins;
 
 void setup() {
     //Setting up the settings
-    size(200, 200);
+    size(800, 800);
     frameRate(60);
     noCursor();
     level = 1;
     //Drawing the Player
-    player001 = new Player(0,0,5,5,0);
+    player001 = new Player(0,0,20,20,0);
     lantern = new Lantern(player001.getX(), player001.getY(), 1, 6000);
     generateNewLevel(level);
     isGameOver = 0;
     x = player001.getX();
     bullets = new ArrayList<Bullet>();
     fuels = new ArrayList<FuelBlock>();
+    k = 0;
+    playerImages = new PImage[12];
+    playerImages[0] = loadImage("player001.png");
+    playerImages[1] = loadImage("player002.png");
+    playerImages[2] = loadImage("player003.png");
+    playerImages[3] = loadImage("player004.png");
+    playerImages[4] = loadImage("player005.png");
+    playerImages[5] = loadImage("player006.png");
+    playerImages[6] = loadImage("player007.png");
+    playerImages[7] = loadImage("player008.png");
+    playerImages[8] = loadImage("player009.png");
+    playerImages[9] = loadImage("player010.png");
+    playerImages[10] = loadImage("player011.png");
+    playerImages[11] = loadImage("player012.png");
     badDirection = 0;
 }
 
@@ -46,27 +61,31 @@ void draw() {
             //Normal key presses
             if (key == 'w') {
                 if (badDirection != 1) {
-                    player001.moveY(-1);
+                    player001.moveY(-2);
                     player001.changeDirection(1);
+                    k++;
                 }
             } else if (key == 'a') {
                 if (badDirection != 2) {
-                    player001.moveX(-1);
+                    player001.moveX(-2);
                     player001.changeDirection(2);
+                    k++;
                 }
             } else if (key == 's') {
                 if (badDirection != 3) {
-                    player001.moveY(1);
+                    player001.moveY(2);
                     player001.changeDirection(3);
+                    k++;
                 }
             } else if (key == 'd') {
                 if (badDirection != 4) {
-                    player001.moveX(1);
+                    player001.moveX(2);
                     player001.changeDirection(4);
+                    k++;
                 }
             } else if (key == ' ') {
                 if (i == 10) {
-                    bullets.add(new Bullet(x+2,y+2,player001.getDirection()));
+                    bullets.add(new Bullet(x+10,y+10,player001.getDirection()));
                 }
             } else if (key == 'q') {
                 player001.rotatePlayerLeft();
@@ -98,13 +117,16 @@ void draw() {
             y = player001.getY();
             badDirection = checkAllCollisions(x, y, player001.getDirection(), 0);
         } 
+        if (k > 20) {
+            k = 0;   
+        }
         //Refreshing the board
         fill(#0000FF);
         refreshBoard();
         //Redrawing the player
-        player001.redrawPlayer();
-        lantern.setX(player001.getX()+2.5);
-        lantern.setY(player001.getY()+2.5);
+        player001.updatePlayerAnimation(k, playerImages);
+        lantern.setX(player001.getX()+10);
+        lantern.setY(player001.getY()+10);
         //This allows the Enemy to move only once every 4 frames (twice a second)
         for (int i = 0; i < enemies.size(); i++) {
             enemies.get(i).moveTowardsPlayer(x, y);   
@@ -117,9 +139,9 @@ void draw() {
         //This is a delay timer
         //It pauses for 3 seconds
         int m = millis();
-        while(millis() < m+3000);
-        lantern.setX(2.5);
-        lantern.setY(2.5);
+        while(millis() < m+2000);
+        lantern.setX(10);
+        lantern.setY(10);
         //Generating a new level
         level++;
         generateNewLevel(level);
@@ -131,14 +153,14 @@ void draw() {
         //Checking on the coins
         for (int i = 0; i < coins.size(); i++) {
             //Checks if the coins have been picked up
-            if (!coins.get(i).found && coins.get(i).pickedUp(x, y, 5, 5)) {
+            if (!coins.get(i).found && coins.get(i).pickedUp(x, y, 20, 20)) {
                 player001.addCoins(1);
             }
         }
         //Check on the Fuel Blocks
         for (int i = 0; i < fuels.size(); i++) {
             //Checks if the fuels have been picked up
-            if (fuels.get(i).pickedUp(x, y, 5, 5)) {
+            if (fuels.get(i).pickedUp(x, y, 20, 20)) {
                 lantern.addFuel(fuels.get(i).getFuel());
                 fuels.remove(i);
             }
@@ -151,17 +173,17 @@ void draw() {
         //Loops through the Bullets and moves them
         for (int i = 0; i < bullets.size(); i++) {
             for (int j = 0; j < walls.size(); j++) {
-                if (!walls.get(j).checkCollision(bullets.get(i).getX(), bullets.get(i).getY(), 1, 1)) {
+                if (!walls.get(j).checkCollision(bullets.get(i).getX(), bullets.get(i).getY(), 3, 3)) {
                     bullets.get(i).setActive(false);
                 }
             }
             for (int j = 0; j < enemies.size(); j++) {
-                if (!enemies.get(j).checkHit(bullets.get(i).getX(), bullets.get(i).getY(), 1, 1)) {
+                if (!enemies.get(j).checkHit(bullets.get(i).getX(), bullets.get(i).getY(), 3, 3)) {
                     bullets.get(i).setActive(false);   
                     if (!enemies.get(j).checkAlive()) {
                         //The enemy has a 1 in 5 chance of dropping a fuel block
                         if (randInt(1,5) == 1) {
-                            fuels.add(new FuelBlock(enemies.get(j).getX(), enemies.get(j).getY(), ((level*100)+600)));
+                            fuels.add(new FuelBlock(enemies.get(j).getX(), enemies.get(j).getY(), ((level*200)+600)));
                         }
                         //Player gets coins for killing an enemy
                         player001.addCoins(level);
@@ -218,7 +240,7 @@ int randInt(int min, int max, int interval) {
 void refreshBoard() {
     //Redrawing the background
     fill(#888888);
-    rect(0, 0, 200, 200);
+    rect(0, 0, 800, 800);
     fill(#000000);
     //Redrawing the Walls
     for (int i = 0; i < walls.size (); i++) {
@@ -272,9 +294,9 @@ int checkAllCollisions(float x, float y, int direction, int noCollision) {
         collision = direction;
     } else if (y < 0) {
         collision = direction;
-    } else if (x > 195) {
+    } else if (x > 780) {
         collision = direction;
-    } else if (y > 195) {
+    } else if (y > 780) {
         collision = direction;
     }
     return collision;
@@ -299,31 +321,31 @@ int checkGameOver() {
             isGameOver = 1;   
             //Draw the Game Won Screen
             fill(#00FF00);
-            rect(0,0,200,200);
+            rect(0,0,800,800);
             fill(#000000);
             textSize(16);
             textAlign(CENTER);
             String levelString = "LEVEL " + level + " COMPLETE";
-            text(levelString, 100, 100);
+            text(levelString, 400, 400);
             String scoreString = "CURRENT SCORE: " + player001.getNumOfCoins();
-            text(scoreString, 100, 120);
+            text(scoreString, 400, 420);
         }
         //Loops through enemies
         for (int i = 0; i < enemies.size(); i++) {
             //Checks if the player has lost
-            if (x > (enemies.get(i).getX()-player001.getSizeX()) && x < (enemies.get(i).getX() + 5)) {
-                if (y > (enemies.get(i).getY()-player001.getSizeY()) && y < (enemies.get(i).getY() + 5)) { 
+            if (x > (enemies.get(i).getX()-player001.getSizeX()) && x < (enemies.get(i).getX() + 20)) {
+                if (y > (enemies.get(i).getY()-player001.getSizeY()) && y < (enemies.get(i).getY() + 20)) { 
                    //Game Loss
                    isGameOver = 2;
                    //Draw the Game Over Screen
                    fill(#FF0000);
-                   rect(0,0,200,200);
+                   rect(0,0,800,800);
                    fill(#000000);
                    textSize(16);
                    textAlign(CENTER);
-                   text("GAME OVER - YOU DIED", 100, 100);
+                   text("GAME OVER - YOU DIED", 400, 400);
                    String scoreString = "SCORE: " + player001.getNumOfCoins();
-                   text(scoreString, 100, 120);
+                   text(scoreString, 400, 420);
                 }
             }
         }
@@ -331,13 +353,13 @@ int checkGameOver() {
         isGameOver = 2;
         //Draw the Game Over Screen
         fill(#FF0000);
-        rect(0,0,200,200);
+        rect(0,0,800,800);
         fill(#000000);
         textSize(16);
         textAlign(CENTER);
-        text("GAME OVER - NO FUEL", 100, 100);
+        text("GAME OVER - NO FUEL", 400, 400);
         String scoreString = "SCORE: " + player001.getNumOfCoins();
-        text(scoreString, 100, 120);
+        text(scoreString, 400, 420);
     }
     return isGameOver;
 }
@@ -347,30 +369,30 @@ int checkGameOver() {
 void generateNewLevel(int level) {
     //Drawing the background
     fill(#888888);
-    rect(0, 0, 200, 200);
+    rect(0, 0, 800, 800);
     //Creates grid lines for debugging and testing
     fill(#000000);
     //ArrayList of WallRect objects
     walls = new ArrayList<WallRect>();
     //Build the horizontal walls
     for (int i = 0; i != 5; i++) {
-        walls.add(new WallRect(randInt(0, 190, 10), randInt(0, 190, 10), randInt(10, 190, 10), 10));
+        walls.add(new WallRect(randInt(20, 760, 40), randInt(0, 760, 40), randInt(40, 760, 40), 40));
     }
     //Build the vertical walls
     for (int i = 0; i != 5; i++) {
-        walls.add(new WallRect(randInt(0, 190, 10), randInt(0, 190, 10), 10, randInt(10, 190, 10)));
+        walls.add(new WallRect(randInt(0, 760, 40), randInt(20, 760, 40), 40, randInt(40, 760, 40)));
     }
     //ArrayList of Coin Objects
     coins = new ArrayList<Coin>();
     //Creating the coins to populate the ArrayList
     for (int i = 0; i != level; i++) {
-        coins.add(new Coin(randInt(0, 190, 10), randInt(0, 190, 10)));
+        coins.add(new Coin(randInt(0, 760, 40), randInt(0, 760, 40)));
     }
     //ArrayList of Enemy Objects
     enemies = new ArrayList<Enemy>();
     //Creating the enemies to populate the ArrayList
     for (int i = 0; i != level; i++) {
-        enemies.add(new Enemy(randInt(30, 190, 10), randInt(30, 190, 10),level,level));
+        enemies.add(new Enemy(randInt(80, 760, 40), randInt(80, 760, 40),level,level));
     }
     //Resetting the player back to the start
     player001.setX(0);
