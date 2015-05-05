@@ -43,10 +43,11 @@ class Lantern {
         }
         //The stroke weight is set high so it covers the entire screen
         strokeWeight(1400);
-        ellipse(this.x, this.y, 1200-((this.size-1)*25), 1200-((this.size-1)*25));
+        ellipse(this.x, this.y, 1200-((this.size-1)*100), 1200-((this.size-1)*100                ));
         //Reset the stroke weight
         strokeWeight(1);
         updateFuelLevel();
+        updateFuelBar();
     }
     
     //The getX Function - Gives the X coordinate of the Lantern
@@ -106,5 +107,16 @@ class Lantern {
     //The updateFuelLevel Function - Diminshes the fuel overtime based on size
     void updateFuelLevel() {
         this.fuelLevel -= pow(2, this.size - 1);
+    }
+    
+    //The updateFuelBar Function - Creates a bar that indicates the current Fuel Level
+    void updateFuelBar() {
+        //This creates the outline for the Fuel Bar
+        stroke(#FFFFFF);
+        rect(650,10,100,10);
+        //This creates the Fuel Bar indicator
+        fill(#FFFFFF);
+        rect(650,10,((this.fuelLevel/6000)*100),10);
+        stroke(#000000);
     }
 }

@@ -30,8 +30,7 @@ class FuelBlock {
     
     //The redrawFuelBlock Function - Redraws the fuel block where it is
     void redrawFuelBlock() {
-        fill(#FFA500);
-        rect(this.x, this.y, 20, 20);   
+        image(fuelImage,this.x,this.y,20,20);  
     }
     
     //The pickedUp Function - Sees if the player has picked up the Fuel Block yet
@@ -42,8 +41,8 @@ class FuelBlock {
     //@return boolean that is true when the player picks up the Fuel Block
     boolean pickedUp(float playerX, float playerY, int playerWidthX, int playerWidthY) {
         //Checks the X coordinate first then the Y coordinate for speed and readability
-        if (playerX > (this.x-playerWidthX) && playerX < (this.x + 5)) {
-            if (playerY > (this.y-playerWidthY) && playerY < (this.y + 5)) {
+        if (playerX > (this.x-playerWidthX) && playerX < (this.x + 20)) {
+            if (playerY > (this.y-playerWidthY) && playerY < (this.y + 20)) {
                 return true;
             }
         } 

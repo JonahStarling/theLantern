@@ -9,6 +9,7 @@ Player player001;
 Lantern lantern;
 Bullet bullet001;
 PImage[] playerImages;
+PImage fuelImage;
 ArrayList<FuelBlock> fuels;
 ArrayList<WallRect> walls;
 ArrayList<Bullet> bullets;
@@ -29,6 +30,7 @@ void setup() {
     x = player001.getX();
     bullets = new ArrayList<Bullet>();
     fuels = new ArrayList<FuelBlock>();
+    fuelImage = loadImage("fuel.png");
     k = 0;
     playerImages = new PImage[12];
     playerImages[0] = loadImage("player001.png");
@@ -87,10 +89,6 @@ void draw() {
                 if (i == 10) {
                     bullets.add(new Bullet(x+10,y+10,player001.getDirection()));
                 }
-            } else if (key == 'q') {
-                player001.rotatePlayerLeft();
-            } else if (key == 'e') {
-                player001.rotatePlayerRight();
             } else if (key == 'r') {
                 //Pressing r will reset the game
                 //Resetting the game causes you to lose all of your coins
@@ -203,6 +201,19 @@ void draw() {
         i++;
     } else {
         i = 0;   
+    }
+}
+
+
+
+//The keyPressed Function - Only called when a key is pressed
+//We look at 'q' and 'e' in this function that way you only get called once per press
+//This keeps the player from spinning out of control
+void keyPressed() {
+    if (key == 'q') {
+        player001.rotatePlayerLeft(); 
+    } else if (key == 'e') {
+        player001.rotatePlayerRight();
     }
 }
 
