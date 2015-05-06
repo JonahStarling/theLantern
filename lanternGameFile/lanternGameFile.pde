@@ -64,27 +64,35 @@ void draw() {
             if (key == 'w') {
                 if (badDirection != 1) {
                     player001.moveY(-2);
-                    player001.changeDirection(1);
-                    k++;
+                } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
+                    player001.moveY(-.5);
                 }
+                player001.changeDirection(1);
+                k++;
             } else if (key == 'a') {
                 if (badDirection != 2) {
                     player001.moveX(-2);
-                    player001.changeDirection(2);
-                    k++;
+                } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
+                    player001.moveX(-.5);  
                 }
+                player001.changeDirection(2);
+                k++;
             } else if (key == 's') {
                 if (badDirection != 3) {
                     player001.moveY(2);
-                    player001.changeDirection(3);
-                    k++;
+                } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
+                    player001.moveY(.5);
                 }
+                player001.changeDirection(3);
+                k++;
             } else if (key == 'd') {
                 if (badDirection != 4) {
                     player001.moveX(2);
-                    player001.changeDirection(4);
-                    k++;
+                } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
+                    player001.moveX(.5);
                 }
+                player001.changeDirection(4);
+                k++;
             } else if (key == ' ') {
                 if (i == 10) {
                     bullets.add(new Bullet(x+10,y+10,player001.getDirection()));
@@ -281,25 +289,37 @@ int checkAllCollisions(float x, float y, int direction, int noCollision) {
     //Updates the movement values to see whether the step you want to take is ok
     switch(direction) {
         //Normal stepping
-    case 1: 
-        y -= 1; 
-        break;
-    case 2: 
-        x -= 1;
-        break;
-    case 3: 
-        y += 1;
-        break;
-    case 4: 
-        x += 1;
-        break;
+        case 1: 
+            y -= 2; 
+            break;
+        case 2: 
+            x -= 2;
+            break;
+        case 3: 
+            y += 2;
+            break;
+        case 4: 
+            x += 2;
+            break;
     }
+    collision = checkBoundCollision(x,y,direction,noCollision);
     //Loops through the walls to get the collision
     for (int i = 0; i < walls.size (); i++) {
         if (!walls.get(i).checkCollision(x, y, player001.getSizeX(), player001.getSizeY())) {
             collision = direction;
         }
     }
+    return collision;
+}
+
+//The checkBoundCollision Function - Checks for collisions with the boundaries
+//@param x is the current x location of the player
+//@param y is the current y location of the player
+//@param direction is the way the player is trying to walk
+//@param noCollision is the value to return if no collisions are detected
+//@return collision is the direction of the collision or the noCollision default
+int checkBoundCollision(float x, float y, int direction, int noCollision) {
+    int collision = noCollision;
     //Checks collision with the boundaries
     if (x < 0) {
         collision = direction;
