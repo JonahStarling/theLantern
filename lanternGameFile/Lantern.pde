@@ -7,6 +7,7 @@ class Lantern {
     private float y;
     private int size;
     private float fuelLevel;
+    private ArrayList<int[]> vertices;
     
     //The Basic Lantern Constructor - Creates a Lantern with the default fuelLevel
     //@param x is the x location of the Lantern
@@ -17,7 +18,7 @@ class Lantern {
         this.y = y;
         this.size = size;
         this.fuelLevel = 6000;
-        redrawLantern();
+        //redrawLantern();
     }
     
     //The Advanced Lantern Constructor - Allows you to set a different fuelLevel
@@ -30,7 +31,7 @@ class Lantern {
         this.y = y;
         this.size = size;
         this.fuelLevel = fuelLevel;
-        redrawLantern();
+        //redrawLantern();
     }
     
     //The redrawLantern Function - Redraws the Lantern at its current location
@@ -42,12 +43,49 @@ class Lantern {
             fill(#000000, 0);
         }
         //The stroke weight is set high so it covers the entire screen
-        strokeWeight(1400);
-        ellipse(this.x, this.y, 1200-((this.size-1)*100), 1200-((this.size-1)*100                ));
+        //strokeWeight(1400);
+        //ellipse(this.x, this.y, 1200-((this.size-1)*100), 1200-((this.size-1)*100));
+        for (int i = 0; i < this.vertices.size(); i++) {
+            ArrayList<int[]> tempVals = new ArrayList();
+            int[] temp1 = this.vertices.get(i); // Top Left Vertex
+            tempVals.add(temp1);
+            i++;
+            int[] temp2 = this.vertices.get(i); // Top Right Vertex
+            tempVals.add(temp2);
+            i++;
+            int[] temp3 = this.vertices.get(i); // Bottom Left Vertex
+            tempVals.add(temp3);
+            i++;
+            int[] temp4 = this.vertices.get(i); // Bottom Right Vertex
+            tempVals.add(temp4);
+            int closest = closestPoint(tempVals);
+            fill(0,0,0);
+            //Create a normalization function
+            quad(temp4[0],temp4[1],temp1[0],temp1[1],
+                (((temp1[0]-this.x)*800)+temp1[0]),
+                (((temp1[1]-this.y)*800)+temp1[1]),
+                (((temp4[0]-this.x)*800)+temp4[0]),
+                (((temp4[1]-this.y)*800)+temp4[1]));
+            quad(temp3[0],temp3[1],temp2[0],temp2[1],
+                (((temp2[0]-this.x)*800)+temp2[0]),
+                (((temp2[1]-this.y)*800)+temp2[1]),
+                (((temp3[0]-this.x)*800)+temp3[0]),
+                (((temp3[1]-this.y)*800)+temp3[1]));
+        }
         //Reset the stroke weight
         strokeWeight(1);
         updateFuelLevel();
         updateFuelBar();
+    }
+    
+    int closestPoint(ArrayList<int[]>tempVals) {
+        int closest = 0;
+        
+        return closest;
+    }
+    
+    void setVertices(ArrayList<int[]> vertices) {
+        this.vertices = vertices;
     }
     
     //The getX Function - Gives the X coordinate of the Lantern

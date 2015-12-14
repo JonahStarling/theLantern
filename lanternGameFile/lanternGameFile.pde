@@ -15,6 +15,7 @@ ArrayList<WallRect> walls;
 ArrayList<Bullet> bullets;
 ArrayList<Enemy> enemies;
 ArrayList<Coin> coins;
+ArrayList<int[]> vertices;
 
 void setup() {
     //Setting up the settings
@@ -53,6 +54,7 @@ void setup() {
 //Built in with processing
 //It is run however many times frames per second is set to
 void draw() {
+    System.out.print(frameRate + "\n");
     //Checks the status of the game
     if (isGameOver == 0) {
         //Gets location of player
@@ -413,6 +415,31 @@ void generateNewLevel(int level) {
     for (int i = 0; i != 5; i++) {
         walls.add(new WallRect(randInt(0, 760, 40), randInt(20, 760, 40), 40, randInt(40, 760, 40)));
     }
+    //Add vertices of the walls to the ArrayList of vertices
+    vertices = new ArrayList<int[]>();
+    //int[] mapTL = {0,0};
+    //vertices.add(mapTL);
+    //int[] mapTR = {800,0};
+    //vertices.add(mapTR);
+    //int[] mapBL = {0,800};
+    //vertices.add(mapBL);
+    //int[] mapBR = {800,800};
+    //vertices.add(mapBR);
+    for (int i = 0; i != 10; i++) {
+        //Add vertices to arraylist 
+        //Top left corner
+        int[] topLeft = {walls.get(i).x,walls.get(i).y};
+        vertices.add(topLeft);
+        //Top right corner
+        int[] topRight = {walls.get(i).x+walls.get(i).sizeX,walls.get(i).y};
+        vertices.add(topRight);
+        //Bottom left corner
+        int[] botLeft = {walls.get(i).x,walls.get(i).y+walls.get(i).sizeY};
+        vertices.add(botLeft);
+        //Bottom right corner
+        int[] botRight = {walls.get(i).x+walls.get(i).sizeX,walls.get(i).y+walls.get(i).sizeY};
+        vertices.add(botRight);
+    }
     //ArrayList of Coin Objects
     coins = new ArrayList<Coin>();
     //Creating the coins to populate the ArrayList
@@ -431,6 +458,7 @@ void generateNewLevel(int level) {
     player001.redrawPlayer();
     lantern.setFuelLevel(6000);
     lantern.setSize(1);
+    lantern.setVertices(vertices);
     lantern.redrawLantern();
     i = 0;
 }
