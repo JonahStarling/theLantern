@@ -108,6 +108,26 @@ class Player {
             }
         }
     }
+    
+    //The checkHit Function - Checks if the player was hit by a bullet
+    //@param bulletX is the x coordinate of the top left corner of the bullet
+    //@param bulletY is the y coordinate of the top left corner of the bullet
+    //@param bulletWidthX is the length of the bullet on the x coordinate
+    //@param bulletWidthY is the length of the bullet on the y coordinate
+    //@return boolean that is true when not hit by a bullet
+    boolean checkHit(float bulletX, float bulletY, int bulletWidthX, int bulletWidthY) {
+        //Uses a nested if for readability
+        //Could be combined to a single if
+        //This if statement checks the X
+        if (bulletX >= (this.x-bulletWidthX) && bulletX <= (this.x + 20)) {
+            //This if statement checks the Y
+            if (bulletY >= (this.y-bulletWidthY) && bulletY <= (this.y + 20)) {
+                //Player was hit by bullet
+                return false;
+            }
+        } 
+        return true;
+    }
 
     //The getX Function - Gives the X coordinate of the Player
     //@returns the X location of the Player

@@ -1,3 +1,10 @@
+import ddf.minim.*;
+import ddf.minim.analysis.*;
+import ddf.minim.effects.*;
+import ddf.minim.signals.*;
+import ddf.minim.spi.*;
+import ddf.minim.ugens.*;
+
 import net.java.games.input.*;
 import org.gamecontrolplus.*;
 import org.gamecontrolplus.gui.*;
@@ -6,8 +13,8 @@ import java.util.Random;
 
 //Creating variables and objects to be used in game
 int i, isGameOver, level, badDirection, k;
-float x, y, totalFR;
-boolean buttonBHeld, buttonSelectHeld, buttonStartHeld;
+float x, y;
+boolean buttonBHeld, buttonSelectHeld, buttonStartHeld, gamePaused;
 Coin coin001;
 Enemy enemy001;
 Player player001;
@@ -22,7 +29,7 @@ ArrayList<Enemy> enemies;
 ArrayList<Coin> coins;
 ArrayList<int[]> vertices;
 
-//Controller SetUp
+//Controller Set Up
 ControlIO control;
 ControlDevice device;
 ControlButton buttonA;
@@ -32,13 +39,21 @@ ControlButton buttonStart;
 ControlSlider hatX;
 ControlSlider hatY;
 
+//Sound Set Up
+Minim minim;
+AudioPlayer backgroundNoise;
+AudioPlayer bulletNoise;
+AudioPlayer enemy1Noise;
+AudioPlayer enemy2Noise;
+AudioPlayer pickupNoise;
+
 void setup() {
-    totalFR = 0;
     //Setting up the settings
     size(800, 800);
     frameRate(60);
     noCursor();
     level = 1;
+    gamePaused = false;
     //Intialize the Controller
     control = ControlIO.getInstance(this);
     device = control.getMatchedDevice("nintendoUSBController");
@@ -51,6 +66,13 @@ void setup() {
     buttonStartHeld = false;
     hatX = device.getSlider("hatX");
     hatY = device.getSlider("hatY");
+    //Load the sounds and music
+    minim = new Minim(this);
+    backgroundNoise = minim.loadFile("backgroundNoise.mp3");
+    bulletNoise = minim.loadFile("bullet.mp3");
+    enemy1Noise = minim.loadFile("enemy1.mp3");
+    enemy2Noise = minim.loadFile("enemy2.mp3");
+    pickupNoise = minim.loadFile("pickup.aiff");
     //Drawing the Player
     player001 = new Player(0,0,20,20,0);
     lantern = new Lantern(player001.getX(), player001.getY(), 1, 6000);
@@ -75,6 +97,7 @@ void setup() {
     playerImages[10] = loadImage("player011.png");
     playerImages[11] = loadImage("player012.png");
     badDirection = 0;
+    backgroundNoise.loop();
 }
 
 
@@ -82,164 +105,242 @@ void setup() {
 //Built in with processing
 //It is run however many times frames per second is set to
 void draw() {
-    totalFR += frameRate;
-    //Checks the status of the game
-    if (isGameOver == 0) {
-        //Gets location of player
-        x = player001.getX();
-        y = player001.getY();
-        //Looks to see if a key is pressed then sees what key
-        if (true) {
-            //Normal key presses
-            if (hatY.getValue()==-1) {
-                if (badDirection != 1) {
-                    player001.moveY(-2);
-                } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
-                    player001.moveY(-.5);
-                }
-                player001.changeDirection(1);
-                k++;
-            } else if (hatX.getValue()==-1) {
-                if (badDirection != 2) {
-                    player001.moveX(-2);
-                } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
-                    player001.moveX(-.5);  
-                }
-                player001.changeDirection(2);
-                k++;
-            } else if (hatY.getValue()==1) {
-                if (badDirection != 3) {
-                    player001.moveY(2);
-                } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
-                    player001.moveY(.5);
-                }
-                player001.changeDirection(3);
-                k++;
-            } else if (hatX.getValue()==1) {
-                if (badDirection != 4) {
-                    player001.moveX(2);
-                } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
-                    player001.moveX(.5);
-                }
-                player001.changeDirection(4);
-                k++;
-            }
-            if (buttonA.pressed()) {
-                if (i == 10) {
-                    bullets.add(new Bullet(x+10,y+10,player001.getDirection()));
-                }
-            }
-            if (buttonSelect.pressed() && !buttonSelectHeld) {
-                buttonSelectHeld = true;
-                //Pressing r will reset the game
-                //Resetting the game causes you to lose all of your coins
-                //It also will set you back a level
-                if (level != 1) {
-                    level--;
-                }
-                player001.subtractCoins(player001.getNumOfCoins());
-                generateNewLevel(level);
-            } else if (!buttonSelect.pressed()) {
-                buttonSelectHeld = false;
-            }
-            //Increase Size of Lantern
-            if (buttonB.pressed() && !buttonBHeld) {
-                buttonBHeld = true;
-                lantern.increaseSize();    
-            } else if (!buttonB.pressed()) {
-                buttonBHeld = false;
-            }
-            //Checking if there is a collision and taking note of the current direction
+    if (isGameOver != 2 && buttonStart.pressed() && !buttonStartHeld) {
+        buttonStartHeld = true;
+        if (gamePaused) {
+            gamePaused = false;
+        } else {
+            gamePaused = true;
+        }  
+    } else if (!buttonStart.pressed()) {
+        buttonStartHeld = false;
+    }
+    if (buttonSelect.pressed() && !buttonSelectHeld) {
+        buttonSelectHeld = true;
+        //Pressing r will reset the game
+        //Resetting the game causes you to lose all of your coins
+        //It also will set you back a level
+        if (isGameOver != 2 && level != 1) {
+            level--;
+        } else if (isGameOver == 2) {
+            level = 1;
+            isGameOver = 0;
+        }
+        player001.subtractCoins(player001.getNumOfCoins());
+        generateNewLevel(level);
+    } else if (!buttonSelect.pressed()) {
+        buttonSelectHeld = false;
+    }
+    if (!gamePaused) {
+        //Checks the status of the game
+        if (isGameOver == 0) {
+            //Gets location of player
             x = player001.getX();
             y = player001.getY();
-            badDirection = checkAllCollisions(x, y, player001.getDirection(), 0);
-        } 
-        if (k > 32) {
-            k = 0;   
-        }
-        //Refreshing the board
-        fill(#0000FF);
-        refreshBoard();
-        //Redrawing the player
-        player001.updatePlayerAnimation(k, playerImages);
-        lantern.setX(player001.getX()+10);
-        lantern.setY(player001.getY()+10);
-        //This allows the Enemy to move only once every 4 frames (twice a second)
-        for (int i = 0; i < enemies.size(); i++) {
-            enemies.get(i).moveTowardsPlayer(x, y);   
-        }
-        for (int i = 0; i < enemies.size(); i++) {
-            enemies.get(i).redrawEnemy();   
-        }
-    } else if (isGameOver == 1) {
-        //The game has been won
-        //This is a delay timer
-        //It pauses for 3 seconds
-        int m = millis();
-        while(millis() < m+2000);
-        lantern.setX(10);
-        lantern.setY(10);
-        //Generating a new level
-        level++;
-        generateNewLevel(level);
-        //Reset the value
-        isGameOver = 0;   
-    }
-    //Checks to make sure the game isn't already over
-    if (isGameOver != 2) {
-        //Checking on the coins
-        for (int i = 0; i < coins.size(); i++) {
-            //Checks if the coins have been picked up
-            if (!coins.get(i).found && coins.get(i).pickedUp(x, y, 20, 20)) {
-                player001.addCoins(1);
-            }
-        }
-        //Check on the Fuel Blocks
-        for (int i = 0; i < fuels.size(); i++) {
-            //Checks if the fuels have been picked up
-            if (fuels.get(i).pickedUp(x, y, 20, 20)) {
-                lantern.addFuel(fuels.get(i).getFuel());
-                fuels.remove(i);
-            }
-        }
-        //Checks if the game is over and stores its value
-        isGameOver = checkGameOver();   
-    }
-    //We check if the game is over so bullets only appear in game
-    if (isGameOver == 0) {
-        //Loops through the Bullets and moves them
-        for (int i = 0; i < bullets.size(); i++) {
-            for (int j = 0; j < walls.size(); j++) {
-                if (!walls.get(j).checkCollision(bullets.get(i).getX(), bullets.get(i).getY(), 3, 3)) {
-                    bullets.get(i).setActive(false);
+            //Looks to see if a key is pressed then sees what key
+            if (true) {
+                //Normal key presses
+                if (hatY.getValue()==-1) {
+                    if (badDirection != 1) {
+                        player001.moveY(-2);
+                    } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
+                        player001.moveY(-.5);
+                    }
+                    player001.changeDirection(1);
+                    k++;
+                } else if (hatX.getValue()==-1) {
+                    if (badDirection != 2) {
+                        player001.moveX(-2);
+                    } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
+                        player001.moveX(-.5);  
+                    }
+                    player001.changeDirection(2);
+                    k++;
+                } else if (hatY.getValue()==1) {
+                    if (badDirection != 3) {
+                        player001.moveY(2);
+                    } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
+                        player001.moveY(.5);
+                    }
+                    player001.changeDirection(3);
+                    k++;
+                } else if (hatX.getValue()==1) {
+                    if (badDirection != 4) {
+                        player001.moveX(2);
+                    } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
+                        player001.moveX(.5);
+                    }
+                    player001.changeDirection(4);
+                    k++;
                 }
+                if (buttonA.pressed()) {
+                    if (i == 10) {
+                        bulletNoise.rewind();
+                        bulletNoise.play();
+                        bullets.add(new Bullet(x+10,y+10,player001.getDirection()));
+                    }
+                }
+                //Increase Size of Lantern
+                if (buttonB.pressed() && !buttonBHeld) {
+                    buttonBHeld = true;
+                    lantern.increaseSize();    
+                } else if (!buttonB.pressed()) {
+                    buttonBHeld = false;
+                }
+                //Checking if there is a collision and taking note of the current direction
+                x = player001.getX();
+                y = player001.getY();
+                badDirection = checkAllCollisions(x, y, player001.getDirection(), 0);
+            } 
+            if (k > 32) {
+                k = 0;   
             }
-            for (int j = 0; j < enemies.size(); j++) {
-                if (!enemies.get(j).checkHit(bullets.get(i).getX(), bullets.get(i).getY(), 3, 3)) {
-                    bullets.get(i).setActive(false);   
-                    if (!enemies.get(j).checkAlive()) {
-                        //The enemy has a 1 in 5 chance of dropping a fuel block
-                        if (randInt(1,5) == 1) {
-                            fuels.add(new FuelBlock(enemies.get(j).getX(), enemies.get(j).getY(), ((level*200)+600)));
+            //Refreshing the board
+            fill(#0000FF);
+            refreshBoard();
+            //Redrawing the player
+            player001.updatePlayerAnimation(k, playerImages);
+            lantern.setX(player001.getX()+10);
+            lantern.setY(player001.getY()+10);
+            //This allows the Enemy to move only once every 4 frames (twice a second)
+            for (int i = 0; i < enemies.size(); i++) {
+                enemies.get(i).moveTowardsPlayer(x, y);
+                if ((enemies.get(i).getX() < x+100) && (enemies.get(i).getX() > x-100) && (enemies.get(i).getY() < y+100) && (enemies.get(i).getY() > y-100)) {
+                    if (enemies.get(i).getType() == 1) {
+                        if (!enemy1Noise.isPlaying()) {
+                            enemy1Noise.rewind();
+                            enemy1Noise.play();
                         }
-                        //Player gets coins for killing an enemy
-                        player001.addCoins(level);
-                        enemies.remove(j);
+                    } else if (enemies.get(i).getType() == 2) {
+                        if (!enemy2Noise.isPlaying()) {
+                            enemy2Noise.rewind();
+                            enemy2Noise.play();
+                        }
+                    }
+                }
+                if ((enemies.get(i).getType() == 2) && (this.i == 10) && (randInt(1,10) > 9)) {
+                    if ((enemies.get(i).getX() < x+20) && (enemies.get(i).getX() > x-20)) {
+                        if (enemies.get(i).getY() < y) {
+                            bulletNoise.rewind();
+                            bulletNoise.play();
+                            bullets.add(new Bullet(enemies.get(i).getX()+10,enemies.get(i).getY()+10,3,2));
+                        } else {
+                            bulletNoise.rewind();
+                            bulletNoise.play();
+                            bullets.add(new Bullet(enemies.get(i).getX()+10,enemies.get(i).getY()+10,1,2));
+                        }
+                    } else if ((enemies.get(i).getY() < y+20) && (enemies.get(i).getY() > y-20)) {
+                        if (enemies.get(i).getX() < x) {
+                            bulletNoise.rewind();
+                            bulletNoise.play();
+                            bullets.add(new Bullet(enemies.get(i).getX()+10,enemies.get(i).getY()+10,4,2));
+                        } else {
+                            bulletNoise.rewind();
+                            bulletNoise.play();
+                            bullets.add(new Bullet(enemies.get(i).getX()+10,enemies.get(i).getY()+10,2,2));
+                        }
                     }
                 }
             }
-            if (bullets.get(i).getActive()) {
-                bullets.get(i).shootBullet();
-            } else {
-                bullets.remove(i);   
+            for (int i = 0; i < enemies.size(); i++) {
+                enemies.get(i).redrawEnemy();
+            }
+        } else if (isGameOver == 1) {
+            //The game has been won
+            //This is a delay timer
+            //It pauses for 3 seconds
+            int m = millis();
+            while(millis() < m+2000);
+            lantern.setX(10);
+            lantern.setY(10);
+            //Generating a new level
+            level++;
+            generateNewLevel(level);
+            //Reset the value
+            isGameOver = 0;   
+        }
+        //Checks to make sure the game isn't already over
+        if (isGameOver != 2) {
+            //Checking on the coins
+            for (int i = 0; i < coins.size(); i++) {
+                //Checks if the coins have been picked up
+                if (!coins.get(i).found && coins.get(i).pickedUp(x, y, 20, 20)) {
+                    pickupNoise.rewind();
+                    pickupNoise.play();
+                    player001.addCoins(1);
+                }
+            }
+            //Check on the Fuel Blocks
+            for (int i = 0; i < fuels.size(); i++) {
+                //Checks if the fuels have been picked up
+                if (fuels.get(i).pickedUp(x, y, 20, 20)) {
+                    pickupNoise.rewind();
+                    pickupNoise.play();
+                    lantern.addFuel(fuels.get(i).getFuel());
+                    fuels.remove(i);
+                }
+            }
+            //Checks if the game is over and stores its value
+            isGameOver = checkGameOver();   
+        }
+        //We check if the game is over so bullets only appear in game
+        if (isGameOver == 0) {
+            //Loops through the Bullets and moves them
+            for (int i = 0; i < bullets.size(); i++) {
+                for (int j = 0; j < walls.size(); j++) {
+                    if (!walls.get(j).checkCollision(bullets.get(i).getX(), bullets.get(i).getY(), 3, 3)) {
+                        bullets.get(i).setActive(false);
+                    }
+                }
+                if (bullets.get(i).getType() == 1) {
+                    for (int j = 0; j < enemies.size(); j++) {
+                        if (!enemies.get(j).checkHit(bullets.get(i).getX(), bullets.get(i).getY(), 3, 3)) {
+                            bullets.get(i).setActive(false);   
+                            if (!enemies.get(j).checkAlive()) {
+                                //The enemy has a 1 in 5 chance of dropping a fuel block
+                                if (randInt(1,5) == 1) {
+                                    fuels.add(new FuelBlock(enemies.get(j).getX(), enemies.get(j).getY(), ((level*200)+600)));
+                                }
+                                //Player gets coins for killing an enemy
+                                player001.addCoins(level);
+                                enemies.remove(j);
+                            }
+                        }
+                    }
+                } else if (bullets.get(i).getType() == 2) {
+                    if (!player001.checkHit(bullets.get(i).getX(), bullets.get(i).getY(), 3, 3)) {
+                        bullets.get(i).setActive(false);   
+                        isGameOver = 2;
+                        //Draw the Game Over Screen
+                        fill(#FF0000);
+                        rect(0,0,800,800);
+                        fill(#000000);
+                        textSize(16);
+                        textAlign(CENTER);
+                        text("GAME OVER - YOU DIED", 400, 400);
+                        String scoreString = "SCORE: " + player001.getNumOfCoins();
+                        text(scoreString, 400, 420);
+                    }
+                }
+                if (bullets.get(i).getActive()) {
+                    bullets.get(i).shootBullet();
+                } else {
+                    bullets.remove(i);   
+                }
+            }
+            if (isGameOver != 2) {
+                lantern.redrawLantern();
             }
         }
-        lantern.redrawLantern();
-    }
-    if (i < 11) {
-        i++;
+        if (i < 11) {
+            i++;
+        } else {
+            i = 0;   
+        }
     } else {
-        i = 0;   
+        textSize(16);
+        textAlign(CENTER);
+        text("GAME PAUSED", 400, 400);
     }
 }
 
@@ -409,8 +510,6 @@ int checkGameOver() {
         text("GAME OVER - NO FUEL", 400, 400);
         String scoreString = "SCORE: " + player001.getNumOfCoins();
         text(scoreString, 400, 420);
-        //Prints out average framerate at end of game
-        System.out.println(totalFR/frameCount);
     }
     return isGameOver;
 }
@@ -460,7 +559,13 @@ void generateNewLevel(int level) {
     enemies = new ArrayList<Enemy>();
     //Creating the enemies to populate the ArrayList
     for (int i = 0; i != level; i++) {
-        enemies.add(new Enemy(randInt(80, 760, 40), randInt(80, 760, 40),level,level));
+        if ((level >= 2) && (randInt(1,10) > 8)) {
+            //Shooting Enemy
+            enemies.add(new Enemy(randInt(80, 760, 40), randInt(80, 760, 40),randInt(10,15),level/2,2));
+        } else {
+            //Normal Enemy
+            enemies.add(new Enemy(randInt(80, 760, 40), randInt(80, 760, 40),randInt(10,15),level));
+        } 
     }
     //Resetting the player back to the start
     player001.setX(0);

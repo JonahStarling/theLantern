@@ -38,25 +38,29 @@ class Lantern {
     
     //The redrawLantern Function - Redraws the Lantern at its current location
     void redrawLantern() {
-        //The stroke weight is set high so it covers the entire screen
-        //strokeWeight(1400);
-        //ellipse(this.x, this.y, 1200-((this.size-1)*100), 1200-((this.size-1)*100));
+        //Loop through the vertices in the world
         for (int i = 0; i < this.vertices.size(); i++) {
+            //This will hold the vertices of the WallRect that we are looking at
             ArrayList<int[]> tempVals = new ArrayList();
-            int[] temp1 = this.vertices.get(i); // Top Left Vertex
+            //Top Left Vertex
+            int[] temp1 = this.vertices.get(i); 
             tempVals.add(temp1);
             i++;
-            int[] temp2 = this.vertices.get(i); // Top Right Vertex
+            //Top Right Vertex
+            int[] temp2 = this.vertices.get(i);
             tempVals.add(temp2);
             i++;
-            int[] temp3 = this.vertices.get(i); // Bottom Left Vertex
+            //Bottom Left Vertex
+            int[] temp3 = this.vertices.get(i); 
             tempVals.add(temp3);
             i++;
-            int[] temp4 = this.vertices.get(i); // Bottom Right Vertex
+            //Bottom Right Vertex
+            int[] temp4 = this.vertices.get(i);
             tempVals.add(temp4);
             noStroke();
             fill(0,0,0,200);
-            //Create a normalization function
+            //Creates the two shadows
+            //Each shadow starts from oppositie corners of the rectangle
             quad(temp4[0],temp4[1],temp1[0],temp1[1],
                 (((temp1[0]-this.x)*800)+temp1[0]),
                 (((temp1[1]-this.y)*800)+temp1[1]),
@@ -72,11 +76,13 @@ class Lantern {
         fill(0,0,0,0);
         //The stroke weight is set high so it covers the entire screen
         strokeWeight(50);
+        //These draw the rings of the light that create the fade
         stroke(0,0,0,50);
         ellipse(this.x, this.y, 250+((this.size-1)*100), 250+((this.size-1)*100));
         stroke(0,0,0,100);
         ellipse(this.x, this.y, 350+((this.size-1)*100), 350+((this.size-1)*100));
         //This sets the inner part of the circle clear so you can see
+        //The brightness changes based on how much fuel you have
         if (this.fuelLevel <= 2000) {
             fill(#000000, 200 - (this.fuelLevel / 10));
         } else {
@@ -91,7 +97,9 @@ class Lantern {
         updateFuelBar();
     }
     
+    //The increaseSize Function - Increases the area that the lantern covers
     void increaseSize() {
+        //Wraps around to one after three
         if (this.size != 3) {
             this.size++;
         } else {
@@ -99,6 +107,8 @@ class Lantern {
         }
     }
     
+    //The setVertices Function - Sets the location of all vertices in the world
+    //@param vertices is an ArrayList of integer arrays that contain the points for the vertices
     void setVertices(ArrayList<int[]> vertices) {
         this.vertices = vertices;
     }
