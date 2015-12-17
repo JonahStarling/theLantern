@@ -18,7 +18,8 @@ class Lantern {
         this.y = y;
         this.size = size;
         this.fuelLevel = 6000;
-        //redrawLantern();
+        vertices = new ArrayList();
+        redrawLantern();
     }
     
     //The Advanced Lantern Constructor - Allows you to set a different fuelLevel
@@ -31,17 +32,12 @@ class Lantern {
         this.y = y;
         this.size = size;
         this.fuelLevel = fuelLevel;
-        //redrawLantern();
+        vertices = new ArrayList();
+        redrawLantern();
     }
     
     //The redrawLantern Function - Redraws the Lantern at its current location
     void redrawLantern() {
-        //This sets the inner part of the circle clear so you can see
-        if (this.fuelLevel <= 2000) {
-            fill(#000000, 200 - (this.fuelLevel / 10));
-        } else {
-            fill(#000000, 0);
-        }
         //The stroke weight is set high so it covers the entire screen
         //strokeWeight(1400);
         //ellipse(this.x, this.y, 1200-((this.size-1)*100), 1200-((this.size-1)*100));
@@ -58,8 +54,8 @@ class Lantern {
             i++;
             int[] temp4 = this.vertices.get(i); // Bottom Right Vertex
             tempVals.add(temp4);
-            int closest = closestPoint(tempVals);
-            fill(0,0,0);
+            noStroke();
+            fill(0,0,0,200);
             //Create a normalization function
             quad(temp4[0],temp4[1],temp1[0],temp1[1],
                 (((temp1[0]-this.x)*800)+temp1[0]),
@@ -71,17 +67,36 @@ class Lantern {
                 (((temp2[1]-this.y)*800)+temp2[1]),
                 (((temp3[0]-this.x)*800)+temp3[0]),
                 (((temp3[1]-this.y)*800)+temp3[1]));
+            stroke(0);
         }
+        fill(0,0,0,0);
+        //The stroke weight is set high so it covers the entire screen
+        strokeWeight(50);
+        stroke(0,0,0,50);
+        ellipse(this.x, this.y, 250+((this.size-1)*100), 250+((this.size-1)*100));
+        stroke(0,0,0,100);
+        ellipse(this.x, this.y, 350+((this.size-1)*100), 350+((this.size-1)*100));
+        //This sets the inner part of the circle clear so you can see
+        if (this.fuelLevel <= 2000) {
+            fill(#000000, 200 - (this.fuelLevel / 10));
+        } else {
+            fill(#000000, 0);
+        }
+        strokeWeight(1400);
+        stroke(0,0,0,255);
+        ellipse(this.x, this.y, 1000-((this.size-1)*100), 1000-((this.size-1)*100));
         //Reset the stroke weight
         strokeWeight(1);
         updateFuelLevel();
         updateFuelBar();
     }
     
-    int closestPoint(ArrayList<int[]>tempVals) {
-        int closest = 0;
-        
-        return closest;
+    void increaseSize() {
+        if (this.size != 3) {
+            this.size++;
+        } else {
+            this.size = 1;   
+        }
     }
     
     void setVertices(ArrayList<int[]> vertices) {

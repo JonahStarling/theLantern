@@ -1,8 +1,13 @@
+import net.java.games.input.*;
+import org.gamecontrolplus.*;
+import org.gamecontrolplus.gui.*;
+
 import java.util.Random;
 
 //Creating variables and objects to be used in game
 int i, isGameOver, level, badDirection, k;
-float x, y;
+float x, y, totalFR;
+boolean buttonBHeld, buttonSelectHeld, buttonStartHeld;
 Coin coin001;
 Enemy enemy001;
 Player player001;
@@ -17,12 +22,35 @@ ArrayList<Enemy> enemies;
 ArrayList<Coin> coins;
 ArrayList<int[]> vertices;
 
+//Controller SetUp
+ControlIO control;
+ControlDevice device;
+ControlButton buttonA;
+ControlButton buttonB;
+ControlButton buttonSelect;
+ControlButton buttonStart;
+ControlSlider hatX;
+ControlSlider hatY;
+
 void setup() {
+    totalFR = 0;
     //Setting up the settings
     size(800, 800);
     frameRate(60);
     noCursor();
     level = 1;
+    //Intialize the Controller
+    control = ControlIO.getInstance(this);
+    device = control.getMatchedDevice("nintendoUSBController");
+    buttonA = device.getButton("buttonA");
+    buttonB = device.getButton("buttonB");
+    buttonBHeld = false;
+    buttonSelect = device.getButton("buttonSelect");
+    buttonSelectHeld = false;
+    buttonStart = device.getButton("buttonStart");
+    buttonStartHeld = false;
+    hatX = device.getSlider("hatX");
+    hatY = device.getSlider("hatY");
     //Drawing the Player
     player001 = new Player(0,0,20,20,0);
     lantern = new Lantern(player001.getX(), player001.getY(), 1, 6000);
@@ -54,16 +82,16 @@ void setup() {
 //Built in with processing
 //It is run however many times frames per second is set to
 void draw() {
-    System.out.print(frameRate + "\n");
+    totalFR += frameRate;
     //Checks the status of the game
     if (isGameOver == 0) {
         //Gets location of player
         x = player001.getX();
         y = player001.getY();
         //Looks to see if a key is pressed then sees what key
-        if (keyPressed) {
+        if (true) {
             //Normal key presses
-            if (key == 'w') {
+            if (hatY.getValue()==-1) {
                 if (badDirection != 1) {
                     player001.moveY(-2);
                 } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
@@ -71,7 +99,7 @@ void draw() {
                 }
                 player001.changeDirection(1);
                 k++;
-            } else if (key == 'a') {
+            } else if (hatX.getValue()==-1) {
                 if (badDirection != 2) {
                     player001.moveX(-2);
                 } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
@@ -79,7 +107,7 @@ void draw() {
                 }
                 player001.changeDirection(2);
                 k++;
-            } else if (key == 's') {
+            } else if (hatY.getValue()==1) {
                 if (badDirection != 3) {
                     player001.moveY(2);
                 } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
@@ -87,7 +115,7 @@ void draw() {
                 }
                 player001.changeDirection(3);
                 k++;
-            } else if (key == 'd') {
+            } else if (hatX.getValue()==1) {
                 if (badDirection != 4) {
                     player001.moveX(2);
                 } else if (checkBoundCollision(x,y,player001.getDirection(),0) == 0) {
@@ -95,11 +123,14 @@ void draw() {
                 }
                 player001.changeDirection(4);
                 k++;
-            } else if (key == ' ') {
+            }
+            if (buttonA.pressed()) {
                 if (i == 10) {
                     bullets.add(new Bullet(x+10,y+10,player001.getDirection()));
                 }
-            } else if (key == 'r') {
+            }
+            if (buttonSelect.pressed() && !buttonSelectHeld) {
+                buttonSelectHeld = true;
                 //Pressing r will reset the game
                 //Resetting the game causes you to lose all of your coins
                 //It also will set you back a level
@@ -108,24 +139,22 @@ void draw() {
                 }
                 player001.subtractCoins(player001.getNumOfCoins());
                 generateNewLevel(level);
-            //Keys 1-5 change the size of the lantern
-            } else if (key == '1') {
-                lantern.setSize(1);   
-            } else if (key == '2') {
-                lantern.setSize(2);
-            } else if (key == '3') {
-                lantern.setSize(3);
-            } else if (key == '4') {
-                lantern.setSize(4);
-            } else if (key == '5') {
-                lantern.setSize(5);
+            } else if (!buttonSelect.pressed()) {
+                buttonSelectHeld = false;
+            }
+            //Increase Size of Lantern
+            if (buttonB.pressed() && !buttonBHeld) {
+                buttonBHeld = true;
+                lantern.increaseSize();    
+            } else if (!buttonB.pressed()) {
+                buttonBHeld = false;
             }
             //Checking if there is a collision and taking note of the current direction
             x = player001.getX();
             y = player001.getY();
             badDirection = checkAllCollisions(x, y, player001.getDirection(), 0);
         } 
-        if (k > 20) {
+        if (k > 32) {
             k = 0;   
         }
         //Refreshing the board
@@ -211,19 +240,6 @@ void draw() {
         i++;
     } else {
         i = 0;   
-    }
-}
-
-
-
-//The keyPressed Function - Only called when a key is pressed
-//We look at 'q' and 'e' in this function that way you only get called once per press
-//This keeps the player from spinning out of control
-void keyPressed() {
-    if (key == 'q') {
-        player001.rotatePlayerLeft(); 
-    } else if (key == 'e') {
-        player001.rotatePlayerRight();
     }
 }
 
@@ -393,6 +409,8 @@ int checkGameOver() {
         text("GAME OVER - NO FUEL", 400, 400);
         String scoreString = "SCORE: " + player001.getNumOfCoins();
         text(scoreString, 400, 420);
+        //Prints out average framerate at end of game
+        System.out.println(totalFR/frameCount);
     }
     return isGameOver;
 }
@@ -417,14 +435,6 @@ void generateNewLevel(int level) {
     }
     //Add vertices of the walls to the ArrayList of vertices
     vertices = new ArrayList<int[]>();
-    //int[] mapTL = {0,0};
-    //vertices.add(mapTL);
-    //int[] mapTR = {800,0};
-    //vertices.add(mapTR);
-    //int[] mapBL = {0,800};
-    //vertices.add(mapBL);
-    //int[] mapBR = {800,800};
-    //vertices.add(mapBR);
     for (int i = 0; i != 10; i++) {
         //Add vertices to arraylist 
         //Top left corner

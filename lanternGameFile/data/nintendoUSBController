@@ -1,0 +1,7 @@
+Nintendo USB Controller
+hatX	The Directional Pad X	3	SLIDER	x	0	1.0	0.0
+hatY	The Directional Pad Y	3	SLIDER	y	0	1.0	0.0
+buttonA	A Button	1	BUTTON	1	0	0.0	0.0
+buttonB	B Button	1	BUTTON	2	0	0.0	0.0
+buttonSelect	Select Button	1	BUTTON	8	0	0.0	0.0
+buttonStart	Start Button	1	BUTTON	9	0	0.0	0.0

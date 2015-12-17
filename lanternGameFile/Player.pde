@@ -66,7 +66,7 @@ class Player {
     }
     
     void updatePlayerAnimation(int i, PImage[] playerImages) {
-        if (i > 15) {
+        if (i > 24) {
             if (this.direction == 2) {
                 image(playerImages[3], this.x, this.y, this.sizeX, this.sizeY);
             } else if (this.direction == 4) {
@@ -76,7 +76,7 @@ class Player {
             } else {
                 image(playerImages[9], this.x, this.y, this.sizeX, this.sizeY);
             }
-        } else if (i > 10) {
+        } else if (i > 16) {
             if (this.direction == 2) {
                 image(playerImages[2], this.x, this.y, this.sizeX, this.sizeY);
             } else if (this.direction == 4) {
@@ -86,7 +86,7 @@ class Player {
             } else {
                 image(playerImages[9], this.x, this.y, this.sizeX, this.sizeY);
             }
-        } else if (i > 5) {
+        } else if (i > 8) {
             if (this.direction == 2) {
                 image(playerImages[1], this.x, this.y, this.sizeX, this.sizeY);
             } else if (this.direction == 4) {
