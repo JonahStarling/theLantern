@@ -183,3 +183,4 @@ class Lantern {
         stroke(#000000);
     }
 }
+//--- END OF Lantern CLASS ---//

@@ -22,11 +22,12 @@ Lantern lantern;
 Bullet bullet001;
 PImage[] playerImages;
 PImage fuelImage;
-ArrayList<FuelBlock> fuels;
-ArrayList<WallRect> walls;
-ArrayList<Bullet> bullets;
-ArrayList<Enemy> enemies;
 ArrayList<Coin> coins;
+ArrayList<Tree> trees;
+ArrayList<Enemy> enemies;
+ArrayList<Bullet> bullets;
+ArrayList<WallRect> walls;
+ArrayList<FuelBlock> fuels;
 ArrayList<int[]> vertices;
 
 //Controller Set Up
@@ -514,13 +515,52 @@ int checkGameOver() {
     return isGameOver;
 }
 
+//The spawnTrees function - Spawns the trees in the world
+void spawnTrees() {
+       trees = new ArrayList<Tree>();
+       //Set number of trees to be spawned in world
+       int treesToSpawn = randInt(10,15);
+       int possibleTreeX = 0;
+       int possibleTreeY = 0;
+       //Loops through each tree and spawns it
+       for (int i = 0; i != treesToSpawn; i++) {
+           boolean treeLocationValid = false;
+           while (treeLocationValid) {
+               //Picks a random location
+               possibleTreeX = randInt(40,800,40);
+               possibleTreeY = randInt(40,800,40);
+               //Loops through the walls to get collision
+               for (int k = 0; i < walls.size (); k++) {
+                   if (!walls.get(k).checkCollision(possibleTreeX, possibleTreeY, 20, 20)) { // ***** UPDATE TREE SIZE *****
+                       treeLocationValid = true;
+                   } else {
+                       treeLocationValid = false;   
+                   }
+               }
+               //Loops through the trees to get collision if there was no collisions with the walls
+               if (treeLocationValid) {
+                   for (int k = 0; i < trees.size (); k++) {
+                       if (!trees.get(k).checkCollision(possibleTreeX, possibleTreeY, 20, 20)) { // ***** UPDATE TREE SIZE *****
+                           treeLocationValid = true;
+                       } else {
+                           treeLocationValid = false;   
+                       }
+                   }
+               }
+           }
+           //Spawn Tree
+           trees.add(new Tree(possibleTreeX, possibleTreeY));
+           treeLocationValid = false;
+       }
+}
+
 //The generateNewLevel function - Creates a new random level
 //@param level is the current level the player is on
 void generateNewLevel(int level) {
     //Drawing the background
     fill(#888888);
     rect(0, 0, 800, 800);
-    //Creates grid lines for debugging and testing
+    //Reset Fill
     fill(#000000);
     //ArrayList of WallRect objects
     walls = new ArrayList<WallRect>();
@@ -532,6 +572,10 @@ void generateNewLevel(int level) {
     for (int i = 0; i != 5; i++) {
         walls.add(new WallRect(randInt(0, 760, 40), randInt(20, 760, 40), 40, randInt(40, 760, 40)));
     }
+    //Add the trees to the world
+    spawnTrees();
+    //***** DO NOT ADD THE VERTICES OF THE TREES TO THE ARRAYLIST YET *****
+    //***** POSSIBLE PERFORMANCE ISSUES *****
     //Add vertices of the walls to the ArrayList of vertices
     vertices = new ArrayList<int[]>();
     for (int i = 0; i != 10; i++) {

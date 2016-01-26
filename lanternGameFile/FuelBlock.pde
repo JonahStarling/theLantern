@@ -67,3 +67,4 @@ class FuelBlock {
         return this.fuel;   
     }
 }
+//--- END OF FuelBlock CLASS ---//
